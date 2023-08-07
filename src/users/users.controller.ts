@@ -1,11 +1,13 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { IMessage } from 'src/_common/interfaces/message.interface';
 import { UsersService } from './users.service';
 import { SignupDto } from 'src/_common/dtos/signup.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { LoginDto } from 'src/_common/dtos/login.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { IToken } from 'src/_common/interfaces/Token.interface';
+import { IRequest } from 'src/_common/interfaces/request.interface';
+import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -22,5 +24,17 @@ export class UsersController {
     const { accessToken } = await this.usersService.login(body);
     res.setHeader('Authorization', 'bearer ' + accessToken);
     return res.json({ accessToken });
+  }
+
+  @Delete('logout')
+  async logout(@Req() req: IRequest): Promise<IResult> {
+    const { id } = req.user;
+    return await this.usersService.logout(id);
+  }
+
+  @Get('test')
+  @UseGuards(accessAuthGuard)
+  test() {
+    return 'test';
   }
 }
