@@ -27,8 +27,6 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  /**ProjectMember, Project, Board, Comment */
-
   @OneToMany(() => Project, (project) => project.user, {
     cascade: true,
   })
