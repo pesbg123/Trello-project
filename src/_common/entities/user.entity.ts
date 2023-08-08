@@ -4,7 +4,7 @@ import { ProjectMember } from './projectMember.entity';
 import { Board } from './board.entity';
 import { Comment } from './comment.entity';
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
