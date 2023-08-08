@@ -6,10 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ormConfig } from './_common/orm.config';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
+import { BoardsModule } from './boards/boards.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRootAsync({ useFactory: ormConfig }), UsersModule, JwtModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRootAsync({ useFactory: ormConfig }), UsersModule, JwtModule, BoardsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService], //
 })
 export class AppModule {}
