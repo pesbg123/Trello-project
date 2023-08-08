@@ -7,14 +7,8 @@ export class ProjectMember {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ nullable: false, length: 20 })
-  name: string;
-
-  @Column({ nullable: false })
-  desc: string;
-
-  @Column({ nullable: true, length: 10 })
-  backgroundColor: string;
+  @Column({ nullable: false, default: false })
+  participation: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
