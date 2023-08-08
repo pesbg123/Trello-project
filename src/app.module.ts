@@ -11,8 +11,16 @@ import { BoardsModule } from './boards/boards.module';
 import { BoardColumnsModule } from './board-columns/board-columns.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRootAsync({ useFactory: ormConfig }), UsersModule, JwtModule, BoardsModule, ProjectsModule, BoardColumnsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
+    UsersModule,
+    JwtModule,
+    BoardsModule,
+    ProjectsModule,
+    BoardColumnsModule,
+  ],
   controllers: [AppController],
-  providers: [AppService], 
+  providers: [AppService],
 })
 export class AppModule {}

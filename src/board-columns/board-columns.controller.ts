@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { BoardColumnsService } from './board-columns.service';
 import { CreateColumnDto, moveColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
+import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { CheckCreatorInterceptor } from 'src/_common/utils/checkCreatorInterceptor';
 
 @Controller('projects/:projectId/columns')
+@UseGuards(accessAuthGuard)
+@UseInterceptors(CheckCreatorInterceptor)
 export class BoardColumnsController {
-  constructor(
-    private readonly boardColumnService: BoardColumnsService, // private readonly projectService : ProjectsServie
-  ) {}
+  constructor(private readonly boardColumnService: BoardColumnsService) {}
 
   // 보드컬럼 생성
   @Post()
