@@ -12,11 +12,22 @@ export class JwtService {
       const verify = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
 
       if (verify) {
-        console.log(this.decode(token));
         return this.decode(token);
       }
     } catch (error) {
       throw new UnauthorizedException(error.message);
+    }
+  }
+
+  verifyErrorHandle(token: string) {
+    try {
+      const verify = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+
+      if (verify) {
+        return this.decode(token);
+      }
+    } catch (error) {
+      return error.message;
     }
   }
 
