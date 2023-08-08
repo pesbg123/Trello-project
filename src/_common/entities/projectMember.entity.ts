@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { User } from './user.entity';
 import { Project } from './project.entity';
 
-@Entity()
+@Entity('projectMembers')
 export class ProjectMember {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
