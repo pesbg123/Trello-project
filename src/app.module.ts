@@ -9,6 +9,6 @@ import { BoardsModule } from './boards/boards.module';
 @Module({
   imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRootAsync({ useFactory: ormConfig }), BoardsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService], //
 })
 export class AppModule {}
