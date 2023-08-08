@@ -16,7 +16,7 @@ export class Project {
   desc: string;
 
   @Column({ nullable: true, length: 10 })
-  backgroundColor: string;
+  background_color: string;
 
   @CreateDateColumn()
   createdAt: Date;
