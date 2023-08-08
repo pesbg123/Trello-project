@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { Project } from './project.entity';
 import { Board } from './board.entity';
 
-@Entity()
+@Entity('boardColumns')
 export class BoardColumn {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
