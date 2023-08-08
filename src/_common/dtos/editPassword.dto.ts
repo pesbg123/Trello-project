@@ -1,18 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { Match } from '../utils/match.decorator';
 
-export class SignupDto {
-  @IsNotEmpty()
-  @IsString()
-  @IsEmail()
-  @MaxLength(40)
-  email: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(20)
-  name: string;
-
+export class EditPasswordDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(8)
