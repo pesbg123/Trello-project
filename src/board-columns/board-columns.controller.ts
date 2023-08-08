@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Param, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { BoardColumnsService } from './board-columns.service';
-import { CreateColumnDto, moveColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
+import { CreateColumnDto, orderColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { CheckCreatorInterceptor } from 'src/_common/utils/checkCreatorInterceptor';
@@ -18,9 +18,9 @@ export class BoardColumnsController {
   }
 
   // 보드컬럼 순서변경
-  @Patch(':columnId/move')
-  async moveColumn(@Body() body: moveColumnDto, @Param('projectId') projectId: number, @Param('columnId') columnId: number): Promise<IResult> {
-    return await this.boardColumnService.moveColumn(body, projectId, columnId);
+  @Patch(':columnId/order')
+  async orderColumn(@Body() body: orderColumnDto, @Param('projectId') projectId: number, @Param('columnId') columnId: number): Promise<IResult> {
+    return await this.boardColumnService.orderColumn(body, projectId, columnId);
   }
 
   // 보드컬럼명 수정

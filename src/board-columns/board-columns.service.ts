@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateColumnDto, moveColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
+import { CreateColumnDto, orderColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
 import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { EntityManager, Repository } from 'typeorm';
@@ -27,7 +27,7 @@ export class BoardColumnsService {
   }
 
   // 보드컬럼 순서수정
-  async moveColumn(body: moveColumnDto, projectId: number, columnId: number): Promise<IResult> {
+  async orderColumn(body: orderColumnDto, projectId: number, columnId: number): Promise<IResult> {
     const { newSequence } = body;
     const entityManager = this.boardColumnRepository.manager;
 

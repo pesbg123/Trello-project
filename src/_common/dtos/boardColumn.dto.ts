@@ -10,7 +10,7 @@ export class CreateColumnDto {
   sequence: number;
 }
 
-export class moveColumnDto {
+export class orderColumnDto {
   @IsInt()
   @IsNotEmpty({ message: '컬럼의 위치를 선택해주세요' })
   newSequence: number;
