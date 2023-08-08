@@ -22,6 +22,7 @@ function ormConfig(): TypeOrmModuleOptions {
     migrations: commonConf.MIGRATIONS,
     migrationsRun: commonConf.MIGRATIONS_RUN,
     namingStrategy: new SnakeNamingStrategy(),
+    timezone: 'Asia/Seoul',
   };
 
   return ormconfig;
