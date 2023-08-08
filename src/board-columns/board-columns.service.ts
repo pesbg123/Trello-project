@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateColumnDto, moveColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
 import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class BoardColumnsService {
@@ -29,26 +29,30 @@ export class BoardColumnsService {
   // 보드컬럼 순서수정
   async moveColumn(body: moveColumnDto, projectId: number, columnId: number): Promise<IResult> {
     const { newSequence } = body;
+    const entityManager = this.boardColumnRepository.manager;
+
     const findColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } } });
 
     if (!findColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
-    const targetColumn = await this.boardColumnRepository.findOne({ where: { sequence: newSequence } });
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const targetColumn = await this.boardColumnRepository.findOne({ where: { sequence: newSequence } });
 
-    /* 시퀀스번호가 일치하는 컬럼이 있다면 번호를 교체해줌,
+      /* 시퀀스번호가 일치하는 컬럼이 있다면 번호를 교체해줌,
      번호를 일괄수정하려 했으나 컬럼개수가 많아진다면 일일이 DB를 업데이트 해줘야하므로
      비효율적이라고 판단 */
 
-    if (targetColumn) {
-      const changeSequence = findColumn.sequence;
-      findColumn.sequence = targetColumn.sequence;
-      targetColumn.sequence = changeSequence;
-      await this.boardColumnRepository.save([findColumn, targetColumn]);
-    }
+      if (targetColumn) {
+        const changeSequence = findColumn.sequence;
+        findColumn.sequence = targetColumn.sequence;
+        targetColumn.sequence = changeSequence;
+        await transactionEntityManager.save(BoardColumn, [findColumn, targetColumn]);
+      }
 
-    // 없다면 중복되는 시퀀스번호가 없으므로 저장
-    findColumn.sequence = newSequence;
-    await this.boardColumnRepository.save(findColumn);
+      // 없다면 중복되는 시퀀스번호가 없으므로 저장
+      findColumn.sequence = newSequence;
+      await transactionEntityManager.save(BoardColumn, findColumn);
+    });
 
     return { result: true };
   }
