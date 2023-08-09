@@ -1,6 +1,6 @@
 import { Body, Controller, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { BoardsService } from './boards.service';
-import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { CreateBoardDto } from 'src/_common/dtos/createBoard.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { IRequest } from 'src/_common/interfaces/request.interface';

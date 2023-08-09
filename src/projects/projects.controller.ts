@@ -2,7 +2,7 @@ import { Controller, Post, Body, Res, ValidationPipe, HttpStatus, Get, Param, Us
 import { ProjectsService } from './projects.service';
 import { ProjectDTO } from '../_common/dtos/project.dto';
 import { Response, Request } from 'express';
-import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { IRequest } from 'src/_common/interfaces/request.interface';
 import { EmailDTO } from 'src/_common/dtos/email.dto';
 
@@ -11,7 +11,7 @@ export class ProjectsController {
   constructor(private projectsService: ProjectsService) {}
 
   @Post()
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async createProject(@Body(ValidationPipe) projectDTO: ProjectDTO, @Req() req: IRequest, @Res() res: Response): Promise<Object> {
     projectDTO.userId = req.user.id;
     await this.projectsService.createProject(projectDTO);
@@ -25,7 +25,7 @@ export class ProjectsController {
   }
 
   @Get(':projectId')
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async getProject(@Param('projectId') projectId: number, @Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
     const project = await this.projectsService.getProject(projectId, id);
@@ -33,7 +33,7 @@ export class ProjectsController {
   }
 
   @Patch(':projectId')
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async updateProject(
     @Body('name') name: string,
     @Body('desc') desc: string,
@@ -51,7 +51,7 @@ export class ProjectsController {
   }
 
   @Delete(':projectId')
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async deleteProject(@Param('projectId') projectId: number, @Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
 
@@ -60,7 +60,7 @@ export class ProjectsController {
   }
 
   @Post(':projectId/invitation')
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async invitationProjectMember(
     @Body(ValidationPipe) emailDTO: EmailDTO,
     @Param('projectId') projectId: number,
