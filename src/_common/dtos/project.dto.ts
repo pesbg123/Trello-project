@@ -11,4 +11,6 @@ export class ProjectDTO {
 
   @IsString({ message: '프로젝트 배경 색상을 입력해 주세요.' })
   backgroundColor: string;
+
+  userId: number;
 }

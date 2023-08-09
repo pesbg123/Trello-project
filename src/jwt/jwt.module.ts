@@ -3,6 +3,7 @@ import { JwtService } from './jwt.service';
 
 @Global()
 @Module({
+  imports: [],
   providers: [JwtService],
 })
 export class JwtModule {}
