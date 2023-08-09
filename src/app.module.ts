@@ -8,9 +8,11 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
 import { BoardsModule } from './boards/boards.module';
-import { redisStore } from 'cache-manager-redis-yet';
+import * as redisStore from 'cache-manager-redis-store';
+// import { redisStore } from 'cache-manager-redis-yet';
 import { CacheModule } from '@nestjs/cache-manager';
-
+// import { Cache } from '@nestjs/common';
+import type { RedisClientOptions } from 'redis';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -21,15 +23,14 @@ import { CacheModule } from '@nestjs/cache-manager';
     ProjectsModule,
     CacheModule.registerAsync({
       isGlobal: true,
-      useFactory: async () => ({
-        store: await redisStore({
-          socket: {
-            host: process.env.REDIS_HOST,
-            port: Number(process.env.REDIS_PORT),
-          },
+      useFactory: async () => {
+        return {
+          store: redisStore,
+          host: process.env.REDIS_HOST,
+          port: process.env.REDIS_PORT,
           password: process.env.REDIS_PASSWORD,
-        }),
-      }),
+        };
+      },
     }),
   ],
   controllers: [AppController],
