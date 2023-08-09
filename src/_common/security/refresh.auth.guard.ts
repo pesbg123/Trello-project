@@ -19,6 +19,7 @@ export class RefreshAuthGuard implements CanActivate {
   async validate(request) {
     const requestAccessToken = request.headers.authorization.replace('Bearer ', '') || null;
     const requestRefreshToken = request.body.refreshToken.replace('Bearer ', '') || null;
+
     /** 리프레시 토큰 유효성 검증 */
     this.jwtService.verify(requestRefreshToken, process.env.REFRESH_SECRET_KEY);
 
@@ -28,7 +29,7 @@ export class RefreshAuthGuard implements CanActivate {
 
     /** 액세스 토큰 유효성 검증 */
     const accessVerifyErrorHandle = this.jwtService.verifyErrorHandle(requestAccessToken, process.env.ACCESS_SECRET_KEY);
-    if (cacheValid.accessToken !== requestAccessToken || accessVerifyErrorHandle == 'Normal') {
+    if (cacheValid.accessToken !== requestAccessToken || accessVerifyErrorHandle == 'jwt nomal') {
       await this.cacheManager.del(requestRefreshToken);
       throw new UnauthorizedException();
     }
