@@ -129,7 +129,7 @@ export class ProjectsService {
   async participateProjectMember(projectId: number, email: any): Promise<void> {
     const id = await this.userService.findUser(email);
     await this.projectMemberRepository.update({ project: { id: projectId }, user: { id } }, { participation: true });
-    
+  }
   async checkCreator(userId: number): Promise<IResult> {
     const checkCreator = await this.projectRepository.findOne({ where: { id: userId } });
 

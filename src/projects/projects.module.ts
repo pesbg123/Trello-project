@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Project } from 'src/_common/entities/project.entity';
 import { ProjectMember } from 'src/_common/entities/projectMember.entity';
 import { JwtService } from 'src/jwt/jwt.service';
-import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entity';
 import { MailService } from 'src/mail/mail.service';
@@ -13,6 +13,6 @@ import { MailService } from 'src/mail/mail.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Project, ProjectMember, User])],
   controllers: [ProjectsController],
-  providers: [ProjectsService, JwtService, accessAuthGuard, UsersService, MailService],
+  providers: [ProjectsService, JwtService, AccessAuthGuard, UsersService, MailService],
 })
 export class ProjectsModule {}
