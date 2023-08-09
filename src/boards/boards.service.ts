@@ -13,9 +13,10 @@ export class BoardsService {
   ) {}
 
   // 보드생성
-  async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number): Promise<IResult> {
+  async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
     const newBoard = this.boardRepository.create({
       ...body,
+      file: boardImg,
       user: { id: userId },
       project: { id: projectId },
       boardColumn: { id: columnId },

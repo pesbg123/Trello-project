@@ -19,9 +19,8 @@ export class BoardsController {
     @Req() req: IRequest,
   ): Promise<IResult> {
     const { id } = req.user;
-    console.log(id);
-    console.log(req.file.location);
+    const boardImg = req.file ? req.file.location : null;
 
-    return await this.boardService.createBoard(body, id, projectId, columnId);
+    return await this.boardService.createBoard(body, id, projectId, columnId, boardImg);
   }
 }
