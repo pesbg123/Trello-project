@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EditPasswordDto } from 'src/_common/dtos/editPassword.dto';
 import { EditProfileDto } from 'src/_common/dtos/editProfile.dto';
@@ -6,19 +6,22 @@ import { LoginDto } from 'src/_common/dtos/login.dto';
 import { SignupDto } from 'src/_common/dtos/signup.dto';
 import { User } from 'src/_common/entities/user.entity';
 import { IToken } from 'src/_common/interfaces/Token.interface';
-import { IMessage } from 'src/_common/interfaces/message.interface';
-import { Payload } from 'src/_common/interfaces/payload.interface';
-import { IRequest } from 'src/_common/interfaces/request.interface';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { validatePassword } from 'src/_common/utils/password.compare';
 import { transfomrPassword } from 'src/_common/utils/password.hash';
-import { JwtService } from 'src/jwt/jwt.service';
-
 import { Repository } from 'typeorm';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { JwtService } from 'src/jwt/jwt.service';
+import { IAccessToken } from 'src/_common/interfaces/accessToken.interface';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>, private jwtService: JwtService) {}
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+    private jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   /** 회원가입 */
   async signup(body: SignupDto): Promise<IResult> {
@@ -32,23 +35,19 @@ export class UsersService {
   /** 로그인 */
   async login(body: LoginDto): Promise<IToken> {
     const findByUser = await this.userRepository.findOne({ where: { email: body.email } });
+    if (!findByUser) throw new UnauthorizedException('이메일과 패스워드를 확인해주세요.');
     const validPassword = await validatePassword(findByUser.password, body.password);
+    if (!validPassword) throw new UnauthorizedException('이메일과 패스워드를 확인해주세요.');
 
-    const remainingToken = findByUser.token;
+    const accessToken = this.jwtService.sign(
+      { id: findByUser.id, name: findByUser.name, email: findByUser.email },
+      process.env.ACCESS_SECRET_KEY,
+      process.env.JWT_ACCESS_EXPIRATION_TIME,
+    );
+    const refreshToken = this.jwtService.sign({ id: findByUser.id }, process.env.REFRESH_SECRET_KEY, process.env.JWT_REFRESH_EXPIRATION_TIME);
+    await this.cacheManager.set(refreshToken, { accessToken, id: findByUser.id }, Number(process.env.REFRESH_CACHE_TIME));
 
-    if (remainingToken) {
-      const verifyErrorHandle = this.jwtService.verifyErrorHandle(remainingToken);
-      if (verifyErrorHandle !== 'jwt expired') throw new UnauthorizedException('이미 로그인된 계정입니다.');
-    }
-
-    if (!findByUser || !validPassword) throw new UnauthorizedException('이메일과 패스워드를 확인해 주세요.');
-
-    const accessToken = this.jwtService.sign({ id: findByUser.id }, process.env.JWT_ACCESS_EXPIRATION_TIME);
-    await this.userRepository.update({ id: findByUser.id }, { token: accessToken });
-
-    return {
-      accessToken: this.jwtService.sign({ id: findByUser.id }, process.env.JWT_ACCESS_EXPIRATION_TIME),
-    };
+    return { accessToken, refreshToken };
   }
 
   /** 로그아웃 */
@@ -79,5 +78,21 @@ export class UsersService {
     await transfomrPassword(editPassword);
     await this.userRepository.update({ id: user.id }, { password: editPassword.password });
     return { result: true };
+  }
+
+  /** 토큰 재발급 */
+  async refreshToken(refreshToken: string): Promise<IAccessToken> {
+    const { id } = this.jwtService.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
+    const findByUser = await this.userRepository.findOne({ where: { id } });
+
+    const accessToken = this.jwtService.sign(
+      { id: findByUser.id, name: findByUser.name, email: findByUser.email },
+      process.env.ACCESS_SECRET_KEY,
+      process.env.JWT_ACCESS_EXPIRATION_TIME,
+    );
+
+    await this.cacheManager.set(refreshToken, { accessToken, id: findByUser.id }, Number(process.env.REFRESH_CACHE_TIME));
+
+    return { accessToken };
   }
 }
