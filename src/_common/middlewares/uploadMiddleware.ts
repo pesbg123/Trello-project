@@ -24,7 +24,7 @@ export class UploadMiddleware implements NestMiddleware {
           bucket: process.env.BUCKET_NAME,
           contentType: multerS3.AUTO_CONTENT_TYPE,
           shouldTransform: true,
-          key: function (_, file, callback) {
+          key: function (_, file: Express.Multer.File, callback) {
             const fileId = uuid();
             const type = file.mimetype.split('/')[1];
 
