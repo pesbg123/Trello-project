@@ -16,7 +16,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useStaticAssets(join(__dirname, '..', 'src', 'views/public'));
+  app.useStaticAssets(join(__dirname, '..', 'src', 'views'));
   app.setBaseViewsDir(join(__dirname, '..', 'src', 'views'));
   app.setViewEngine('ejs');
 
