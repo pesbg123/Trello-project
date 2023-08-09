@@ -14,7 +14,6 @@ import * as redisStore from 'cache-manager-redis-store';
 import { CacheModule } from '@nestjs/cache-manager';
 import type { RedisClientOptions } from 'redis';
 import { ViewModule } from './view/view.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
