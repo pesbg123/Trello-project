@@ -11,7 +11,7 @@ export class BoardsController {
 
   // // 보드생성
   // @Post('projects/:projectId/boards')
-  // @UseGuards(accessAuthGuard)
+  // @UseGuards(AccessAuthGuard)
   // async createBoard(@Body() body: CreateBoardDto, @Param("id") projectId : number, @Req() req: IRequest): Promise<IResult> {
   //   const { id } = req.user;
   //   console.log(req.file)
