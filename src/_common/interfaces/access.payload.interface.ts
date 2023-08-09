@@ -4,4 +4,5 @@ export interface IAccessPayload extends jwt.JwtPayload {
   id: number;
   name: string;
   email: string;
+  imageUrl: string;
 }

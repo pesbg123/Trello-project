@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { SignupDto } from 'src/_common/dtos/signup.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
@@ -17,6 +17,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post('signup')
+  @UsePipes(ValidationPipe)
   async signup(@Body() body: SignupDto, @Req() req: IRequest): Promise<IResult> {
     /** 프로필 사진 추가 필요  */
     const imageUrl = req.file ? req.file.location : null;
@@ -26,15 +27,16 @@ export class UsersController {
   @Post('login')
   async login(@Body() body: LoginDto, @Res() res: Response): Promise<Response> {
     const { accessToken, refreshToken } = await this.usersService.login(body);
-    res.cookie('refreshToken', refreshToken, { httpOnly: true });
+    res.cookie('refreshToken', refreshToken);
+    //{ httpOnly: true }
     return res.json({ accessToken });
   }
 
   @Delete('logout')
   @UseGuards(AccessAuthGuard)
   async logout(@Req() req: IRequest): Promise<IResult> {
-    const { id } = req.user;
-    return await this.usersService.logout(id);
+    const { refreshToken } = req.body;
+    return await this.usersService.logout(refreshToken);
   }
 
   @Get()

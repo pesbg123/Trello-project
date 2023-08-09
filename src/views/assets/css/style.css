@@ -9,12 +9,14 @@
 /*--------------------------------------------------------------
 # General
 --------------------------------------------------------------*/
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+
 :root {
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
   background: #f6f9ff;
   color: #444444;
 }
@@ -35,7 +37,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 
 /*--------------------------------------------------------------
@@ -153,7 +155,7 @@ h6 {
 
 @media (min-width: 768px) {
   .dropdown-menu-arrow::before {
-    content: "";
+    content: '';
     width: 13px;
     height: 13px;
     background: #fff;
@@ -235,9 +237,9 @@ h6 {
 .card-title {
   padding: 20px 0 15px 0;
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   color: #012970;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 
 .card-title span {
@@ -257,7 +259,7 @@ h6 {
 /* Alerts */
 .alert-heading {
   font-weight: 500;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
   font-size: 20px;
 }
 
@@ -306,7 +308,7 @@ h6 {
 /* Breadcrumbs */
 .breadcrumb {
   font-size: 14px;
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
   color: #899bbd;
   font-weight: 600;
 }
@@ -373,7 +375,7 @@ h6 {
   font-size: 26px;
   font-weight: 700;
   color: #012970;
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nanum Gothic', sans-serif;
 }
 
 .header {
@@ -461,7 +463,7 @@ h6 {
   list-style: none;
 }
 
-.header-nav>ul {
+.header-nav > ul {
   margin: 0;
   padding: 0;
 }
@@ -478,7 +480,9 @@ h6 {
 }
 
 .header-nav .nav-profile img {
-  max-height: 36px;
+  height: 36px;
+  width: 36px;
+  object-fit: cover;
 }
 
 .header-nav .nav-profile span {
@@ -630,7 +634,6 @@ h6 {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 300px;
@@ -644,7 +647,6 @@ h6 {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;
@@ -849,7 +851,7 @@ h6 {
 }
 
 .dashboard .activity .activity-item .activite-label::before {
-  content: "";
+  content: '';
   position: absolute;
   right: -11px;
   width: 4px;
@@ -883,7 +885,7 @@ h6 {
 }
 
 /* News & Updates */
-.dashboard .news .post-item+.post-item {
+.dashboard .news .post-item + .post-item {
   margin-top: 15px;
 }
 
@@ -983,7 +985,7 @@ h6 {
 }
 
 .iconslist .label {
-  font-family: var(--bs-font-monospace);
+  font-family: 'Nanum Gothic', sans-serif;
   display: inline-block;
   width: 100%;
   overflow: hidden;
@@ -998,7 +1000,11 @@ h6 {
 # Profie Page
 --------------------------------------------------------------*/
 .profile .profile-card img {
-  max-width: 120px;
+  max-width: 200px;
+  max-height: 200px;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
 }
 
 .profile .profile-card h2 {
@@ -1117,7 +1123,7 @@ h6 {
 }
 
 .contact .php-email-form .loading:before {
-  content: "";
+  content: '';
   display: inline-block;
   border-radius: 50%;
   width: 24px;
@@ -1149,7 +1155,7 @@ h6 {
   padding: 12px 15px;
 }
 
-.contact .php-email-form button[type=submit] {
+.contact .php-email-form button[type='submit'] {
   background: #4154f1;
   border: 0;
   padding: 10px 30px;
@@ -1158,7 +1164,7 @@ h6 {
   border-radius: 4px;
 }
 
-.contact .php-email-form button[type=submit]:hover {
+.contact .php-email-form button[type='submit']:hover {
   background: #5969f3;
 }
 
