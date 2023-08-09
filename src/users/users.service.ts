@@ -2,6 +2,7 @@ import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Una
 import { InjectRepository } from '@nestjs/typeorm';
 import { EditPasswordDto } from 'src/_common/dtos/editPassword.dto';
 import { EditProfileDto } from 'src/_common/dtos/editProfile.dto';
+import { EmailDTO } from 'src/_common/dtos/email.dto';
 import { LoginDto } from 'src/_common/dtos/login.dto';
 import { SignupDto } from 'src/_common/dtos/signup.dto';
 import { User } from 'src/_common/entities/user.entity';
@@ -79,6 +80,10 @@ export class UsersService {
     await this.userRepository.update({ id: user.id }, { password: editPassword.password });
     return { result: true };
   }
+
+  async findUser(email: string): Promise<any> {
+    const { id } = await this.userRepository.findOne({ where: { email } });
+    return id;
 
   /** 토큰 재발급 */
   async refreshToken(refreshToken: string): Promise<IAccessToken> {

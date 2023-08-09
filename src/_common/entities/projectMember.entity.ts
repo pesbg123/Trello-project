@@ -17,13 +17,11 @@ export class ProjectMember {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.projects, {
-    onDelete: 'CASCADE',
     nullable: false,
   })
   user: User;
 
   @ManyToOne(() => Project, (project) => project.projectMembers, {
-    onDelete: 'CASCADE',
     nullable: false,
   })
   project: Project;
