@@ -17,10 +17,6 @@ export class CreateBoardDto {
 
   @IsNotEmpty({ message: '마감기한을 입력해주세요.' })
   deadlineAt: Date;
-
-  @IsInt()
-  @IsNotEmpty({ message: '컬럼의 위치를 선택해주세요' })
-  boardSequence: number;
 }
 
 export class orderBoardDto {

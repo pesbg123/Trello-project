@@ -17,17 +17,25 @@ export class BoardsService {
 
   // 보드(카드) 생성
   async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
-    // const {boardSequence} = CreateBoardDto
-    // const existSequence =
-    // 음,,
-    const newBoard = this.boardRepository.create({
-      ...body,
-      file: boardImg,
-      user: { id: userId },
-      project: { id: projectId },
-      boardColumn: { id: columnId },
+    const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } }, relations: ['boards'] });
+    const entityManager = this.boardRepository.manager;
+
+    if (!targetColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const maxSequence = targetColumn.boards.reduce((max, b) => Math.max(max, b.boardSequence), 0);
+
+      const newBoard = this.boardRepository.create({
+        ...body,
+        file: boardImg,
+        user: { id: userId },
+        project: { id: projectId },
+        boardColumn: { id: columnId },
+        boardSequence: maxSequence + 1,
+      });
+
+      await transactionEntityManager.save(Board, newBoard);
     });
-    await this.boardRepository.save(newBoard);
 
     return { result: true };
   }
@@ -75,8 +83,7 @@ export class BoardsService {
     const targetBoard = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
     const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId }, relations: ['boards'] });
     const entityManager = this.boardRepository.manager;
-    console.log(boardId, columnId);
-    console.log(targetBoard, targetColumn);
+
     if (!targetBoard || !targetColumn) throw new HttpException('해당 보드 또는 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
@@ -92,6 +99,7 @@ export class BoardsService {
 
   // 보드(카드) 삭제
   async deleteBoard(projectId: number, boardId: number): Promise<IResult> {
+    console.error();
     const targetBoard = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
 
     if (!targetBoard) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
