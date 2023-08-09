@@ -8,10 +8,32 @@ import { ProjectsModule } from './projects/projects.module';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from './jwt/jwt.module';
 import { BoardsModule } from './boards/boards.module';
-
+import * as redisStore from 'cache-manager-redis-store';
+// import { redisStore } from 'cache-manager-redis-yet';
+import { CacheModule } from '@nestjs/cache-manager';
+// import { Cache } from '@nestjs/common';
+import type { RedisClientOptions } from 'redis';
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRootAsync({ useFactory: ormConfig }), UsersModule, JwtModule, BoardsModule, ProjectsModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
+    UsersModule,
+    JwtModule,
+    BoardsModule,
+    ProjectsModule,
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: async () => {
+        return {
+          store: redisStore,
+          host: process.env.REDIS_HOST,
+          port: process.env.REDIS_PORT,
+          password: process.env.REDIS_PASSWORD,
+        };
+      },
+    }),
+  ],
   controllers: [AppController],
-  providers: [AppService], 
+  providers: [AppService],
 })
 export class AppModule {}

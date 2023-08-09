@@ -3,13 +3,13 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class JwtService {
-  sign(payload: Record<any, any>, expiresIn: string) {
-    return jwt.sign(payload, process.env.ACCESS_SECRET_KEY, { expiresIn });
+  sign(payload: Record<any, any>, secretKey: string, expiresIn: string): string {
+    return jwt.sign(payload, secretKey, { expiresIn });
   }
 
-  verify(token: string) {
+  verify(token: string, secretKey: string) {
     try {
-      const verify = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+      const verify = jwt.verify(token, secretKey, { complete: true });
 
       if (verify) {
         return this.decode(token);
@@ -19,12 +19,12 @@ export class JwtService {
     }
   }
 
-  verifyErrorHandle(token: string) {
+  verifyErrorHandle(token: string, secretKey: string): string {
     try {
-      const verify = jwt.verify(token, process.env.ACCESS_SECRET_KEY);
+      const verify = jwt.verify(token, secretKey);
 
       if (verify) {
-        return this.decode(token);
+        return 'jwt nomal';
       }
     } catch (error) {
       return error.message;
@@ -32,6 +32,6 @@ export class JwtService {
   }
 
   decode(token: string) {
-    return jwt.decode(token);
+    return jwt.decode(token, { json: true });
   }
 }
