@@ -7,10 +7,12 @@ import { LoginDto } from 'src/_common/dtos/login.dto';
 import { Request, Response } from 'express';
 import { IToken } from 'src/_common/interfaces/Token.interface';
 import { IRequest } from 'src/_common/interfaces/request.interface';
-import { accessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { User } from 'src/_common/entities/user.entity';
 import { EditProfileDto } from 'src/_common/dtos/editProfile.dto';
 import { EditPasswordDto } from 'src/_common/dtos/editPassword.dto';
+import { RefreshAuthGuard } from 'src/_common/security/refresh.auth.guard';
+import { IAccessToken } from 'src/_common/interfaces/accessToken.interface';
 
 @Controller('users')
 export class UsersController {
@@ -24,27 +26,27 @@ export class UsersController {
 
   @Post('login')
   async login(@Body() body: LoginDto, @Res() res: Response): Promise<Response> {
-    const { accessToken } = await this.usersService.login(body);
-    res.setHeader('Authorization', 'bearer ' + accessToken);
+    const { accessToken, refreshToken } = await this.usersService.login(body);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true });
     return res.json({ accessToken });
   }
 
   @Delete('logout')
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async logout(@Req() req: IRequest): Promise<IResult> {
     const { id } = req.user;
     return await this.usersService.logout(id);
   }
 
   @Get()
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async profile(@Req() req: IRequest): Promise<User> {
     const { id } = req.user;
     return await this.usersService.profile(id);
   }
 
   @Patch()
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async editProfile(@Req() req: IRequest, @Body() editData: EditProfileDto): Promise<IResult> {
     /** 프로필 사진 추가 필요  */
     const { id } = req.user;
@@ -52,9 +54,17 @@ export class UsersController {
   }
 
   @Patch('password')
-  @UseGuards(accessAuthGuard)
+  @UseGuards(AccessAuthGuard)
   async editPassword(@Req() req: IRequest, @Body() editPassword: EditPasswordDto): Promise<IResult> {
     const user = req.user;
     return await this.usersService.editPassword(user, editPassword);
+  }
+
+  @Post('refreshtoken')
+  @UseGuards(RefreshAuthGuard)
+  async refreshToken(@Req() req: IRequest): Promise<IAccessToken> {
+    const { refreshToken } = req.body;
+    const { accessToken } = await this.usersService.refreshToken(refreshToken);
+    return { accessToken };
   }
 }
