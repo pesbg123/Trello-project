@@ -1,73 +1,56 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+#🤼‍♂️CO-WORKING TOOL - IDLE Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![Main](/src/views/assets/img/nest.png)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 프로젝트 목적
 
-## Description
+> 협업 툴을 개발하며 전반적인 개발 프로세스에 대해 깊게 생각해볼 수 있는 기회를 가질 수 있습니다.  
+> 각각의 기능에 어떤 기술이 필요한지, 또 어떻게 문제를 해결해야 하는지를 직접 경험해볼 수 있습니다.  
+> Nest.js와 Typescript를 사용하여 Express가 아닌 새로운 프레임워크를 사용하여 과제를 진행하였습니다.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## ERD
 
-## Installation
+![ERD](/src/views/assets/img/_)
 
-```bash
-$ npm install
-```
+## API 명세
 
-## Running the app
+| Path          | API Method | Verify | Description |
+| ------------- | :--------: | :----: | :---------: |
+| /users/signup |    POST    |        |  회원가입   |
 
-```bash
-# development
-$ npm run start
+## [상세 API 명세보기](https://charming-castanet-ba9.notion.site/eaeb9964f75444169b3d954e4410653b?v=3f5b85388fc74a7988ffdcd5478f6324)
 
-# watch mode
-$ npm run start:dev
+## [시연 영상](_)
 
-# production mode
-$ npm run start:prod
-```
+## 역할 분담
 
-## Test
+| 이름   | 기능 구현 및 역할                                                                                                                  |
+| ------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 박성민 | API 작성, Project(발제자료 상 Board) CRUD, 알람 기능 구현(socket.io), 팀원 초대 시 메일 인증(nodemailer), 담당파트 프론트엔드 연결 |
+| 인한별 | ERD 작성, 전반적인 프로젝트 초기세팅, User CRUD, redis를 사용하여 토큰관리, 전반적인 프론트엔드 초기세팅 및 담당파트 연결          |
+| 이재혁 | Comment CRUD, 담당파트 프론트엔트 연결                                                                                             |
+| 이상훈 | WireFrame 작성, Board(발제자료 상 Card), BoardColumn(발제자료 상 Column) CRUD, 담당파트 프론트엔드 연결                            |
 
-```bash
-# unit tests
-$ npm run test
+> ⭕'COMPLTED LIST'
+>
+> - [x]
+> - [x]
+> - [x]
+> - [x]
+> - [x]
+> - [x]
+> - [x]
 
-# e2e tests
-$ npm run test:e2e
+---
 
-# test coverage
-$ npm run test:cov
-```
+## Problems
 
-## Support
+각자 어려웠던 점 (코드내용 첨부하면 좋을 듯 싶습니다)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+박성민 :
 
-## Stay in touch
+인한별 :
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+이재혁 :
 
-## License
-
-Nest is [MIT licensed](LICENSE).
+이상훈 :
