@@ -41,7 +41,7 @@ export class UsersService {
     if (!validPassword) throw new UnauthorizedException('이메일과 패스워드를 확인해주세요.');
 
     const accessToken = this.jwtService.sign(
-      { id: findByUser.id, name: findByUser.name, email: findByUser.email },
+      { id: findByUser.id, name: findByUser.name, email: findByUser.email, imageUrl: findByUser.imageUrl },
       process.env.ACCESS_SECRET_KEY,
       process.env.JWT_ACCESS_EXPIRATION_TIME,
     );
@@ -52,8 +52,8 @@ export class UsersService {
   }
 
   /** 로그아웃 */
-  async logout(id: number): Promise<IResult> {
-    await this.userRepository.update({ id }, { token: null });
+  async logout(refreshToken: string): Promise<IResult> {
+    await this.cacheManager.del(refreshToken);
     return { result: true };
   }
 
