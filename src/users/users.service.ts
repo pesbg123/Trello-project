@@ -25,11 +25,11 @@ export class UsersService {
   ) {}
 
   /** 회원가입 */
-  async signup(body: SignupDto, imageUrl: string): Promise<IResult> {
+  async signup(body: SignupDto): Promise<IResult> {
     const emailExists = await this.userRepository.findOne({ where: { email: body.email } });
     if (emailExists) throw new HttpException('이미 존재하는 이메일입니다.', HttpStatus.BAD_REQUEST);
     await transfomrPassword(body);
-    await this.userRepository.save({ ...body, imageUrl });
+    await this.userRepository.save(body);
     return { result: true };
   }
 

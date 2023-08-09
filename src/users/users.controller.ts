@@ -19,10 +19,9 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post('signup')
-  async signup(@Body() body: SignupDto, @Req() req: IRequest): Promise<IResult> {
+  async signup(@Body() body: SignupDto): Promise<IResult> {
     /** 프로필 사진 추가 필요  */
-    const imageUrl = req.file ? req.file.location : null;
-    return await this.usersService.signup(body, imageUrl);
+    return await this.usersService.signup(body);
   }
 
   @Post('login')

@@ -27,6 +27,9 @@ export class Board {
   @Column({ nullable: false })
   deadlineAt: Date;
 
+  @Column({ nullable: false })
+  boardSequence: number;
+
   @CreateDateColumn()
   createdAt: Date;
 
