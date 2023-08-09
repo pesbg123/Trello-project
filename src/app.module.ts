@@ -13,6 +13,7 @@ import { BoardColumnsModule } from './board-columns/board-columns.module';
 import * as redisStore from 'cache-manager-redis-store';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ViewModule } from './view/view.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { ViewModule } from './view/view.module';
       },
     }),
     ViewModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

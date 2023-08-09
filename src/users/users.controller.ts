@@ -1,11 +1,9 @@
 import { Body, Controller, Delete, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
-import { IMessage } from 'src/_common/interfaces/message.interface';
 import { UsersService } from './users.service';
 import { SignupDto } from 'src/_common/dtos/signup.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { LoginDto } from 'src/_common/dtos/login.dto';
-import { Request, Response } from 'express';
-import { IToken } from 'src/_common/interfaces/Token.interface';
+import { Response } from 'express';
 import { IRequest } from 'src/_common/interfaces/request.interface';
 import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { User } from 'src/_common/entities/user.entity';
@@ -19,9 +17,10 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Post('signup')
-  async signup(@Body() body: SignupDto): Promise<IResult> {
+  async signup(@Body() body: SignupDto, @Req() req: IRequest): Promise<IResult> {
     /** 프로필 사진 추가 필요  */
-    return await this.usersService.signup(body);
+    const imageUrl = req.file ? req.file.location : null;
+    return await this.usersService.signup(body, imageUrl);
   }
 
   @Post('login')

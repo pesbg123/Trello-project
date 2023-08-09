@@ -1,15 +1,19 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/_common/entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
-import { NestjsFormDataModule } from 'nestjs-form-data';
+import { UploadMiddleware } from 'src/_common/middlewares/uploadMiddleware';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), NestjsFormDataModule],
+  imports: [TypeOrmModule.forFeature([User])],
   exports: [UsersModule],
   controllers: [UsersController],
   providers: [UsersService, JwtService],
 })
-export class UsersModule {}
+export class UsersModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(UploadMiddleware).forRoutes({ path: '/users/signup', method: RequestMethod.POST });
+  }
+}
