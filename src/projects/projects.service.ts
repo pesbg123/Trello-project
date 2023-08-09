@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from 'src/_common/entities/project.entity';
 import { DataSource, Repository } from 'typeorm';
 import { ProjectDTO } from './dto/project.dto';
 import { ProjectMember } from 'src/_common/entities/projectMember.entity';
+import { IResult } from 'src/_common/interfaces/result.interface';
 
 @Injectable()
 export class ProjectsService {
@@ -28,5 +29,13 @@ export class ProjectsService {
     } catch (err) {
       await queryRunner.rollbackTransaction();
     }
+  }
+
+  async checkCreator(userId: number): Promise<IResult> {
+    const checkCreator = await this.projectRepository.findOne({ where: { id: userId } });
+
+    if (!checkCreator) throw new HttpException('접근 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+
+    return { result: true };
   }
 }

@@ -3,7 +3,7 @@ import { BoardsController } from './boards.controller';
 import { BoardsService } from './boards.service';
 import { Board } from 'src/_common/entities/board.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UploadMiddleware } from 'src/_common/middlewares/upload-middleware';
+import { UploadMiddleware } from 'src/_common/middlewares/uploadMiddleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board])],
@@ -12,6 +12,6 @@ import { UploadMiddleware } from 'src/_common/middlewares/upload-middleware';
 })
 export class BoardsModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UploadMiddleware).forRoutes({ path: '/projects/:projectId/columns', method: RequestMethod.POST });
+    consumer.apply(UploadMiddleware).forRoutes({ path: '/projects/:projectId/boards', method: RequestMethod.POST });
   }
 }
