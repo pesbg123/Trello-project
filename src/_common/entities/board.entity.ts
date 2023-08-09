@@ -16,7 +16,7 @@ export class Board {
   content: string;
 
   @Column({ nullable: true, type: 'json' })
-  collaborators: number[];
+  collaborators: string[];
 
   @Column({ nullable: false, length: 10 })
   color: string;

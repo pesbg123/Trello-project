@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateBoardDto {
   @IsString()
@@ -9,12 +9,12 @@ export class CreateBoardDto {
   @MaxLength(500)
   content: string;
 
-  collaborators: JSON;
+  // @IsArray()
+  collaborators: string[];
 
   @IsString()
   color: string;
 
-  @IsString()
   file: string;
 
   @IsNotEmpty({ message: '마감기한을 입력해주세요.' })

@@ -9,14 +9,19 @@ import { IRequest } from 'src/_common/interfaces/request.interface';
 export class BoardsController {
   constructor(private readonly boardService: BoardsService) {}
 
-  // // 보드생성
-  // @Post('projects/:projectId/boards')
-  // @UseGuards(accessAuthGuard)
-  // async createBoard(@Body() body: CreateBoardDto, @Param("id") projectId : number, @Req() req: IRequest): Promise<IResult> {
-  //   const { id } = req.user;
-  //   console.log(req.file)
-  //   // const boardImg = req.file ? req.file.location : null;
+  // 보드생성
+  @Post('projects/:projectId/:columnId/boards')
+  @UseGuards(accessAuthGuard)
+  async createBoard(
+    @Body() body: CreateBoardDto,
+    @Param('projectId') projectId: number,
+    @Param('columnId') columnId: number,
+    @Req() req: IRequest,
+  ): Promise<IResult> {
+    const { id } = req.user;
+    console.log(id);
+    console.log(req.file.location);
 
-  //   return await this.boardService.createBoard(body, id, projectId);
-  // }
+    return await this.boardService.createBoard(body, id, projectId, columnId);
+  }
 }

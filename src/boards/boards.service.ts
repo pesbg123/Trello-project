@@ -12,10 +12,16 @@ export class BoardsService {
     private boardRepository: Repository<Board>,
   ) {}
 
-  // // 보드생성
-  // async createBoard(body: CreateBoardDto, id: number, projectId: number): Promise<IResult> {
-  //   const board = body;
-  //   await this.boardRepository.create({ board, user: { id: id }, project: { id: projectId } });
-  //   return { result: true };
-  // }
+  // 보드생성
+  async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number): Promise<IResult> {
+    const newBoard = this.boardRepository.create({
+      ...body,
+      user: { id: userId },
+      project: { id: projectId },
+      boardColumn: { id: columnId },
+    });
+    await this.boardRepository.save(newBoard);
+
+    return { result: true };
+  }
 }
