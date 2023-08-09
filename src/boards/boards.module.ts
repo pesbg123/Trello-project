@@ -22,6 +22,11 @@ import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
 })
 export class BoardsModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UploadMiddleware).forRoutes({ path: '/projects/:projectId/:columnId/boards', method: RequestMethod.POST });
+    consumer
+      .apply(UploadMiddleware)
+      .forRoutes(
+        { path: '/projects/:projectId/:columnId/boards', method: RequestMethod.POST },
+        { path: '/projects/:projectId/boards/:boardId', method: RequestMethod.PATCH },
+      );
   }
 }

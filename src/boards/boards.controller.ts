@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { BoardsService } from './boards.service';
 import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
-import { CreateBoardDto, orderBoardDto } from 'src/_common/dtos/board.dto';
+import { CreateBoardDto, orderBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { IRequest } from 'src/_common/interfaces/request.interface';
 import { CheckCreatorInterceptor } from 'src/_common/utils/checkCreatorInterceptor';
@@ -45,22 +45,14 @@ export class BoardsController {
   @Patch('boards/:boardId')
   @UseGuards(AccessAuthGuard)
   async updateBoard(
-    @Body('title') title: string,
-    @Body('content') content: string,
-    @Body('collaborators') collaborators: string[],
-    @Body('color') color: string,
-    @Body('deadlineAt') deadlineAt: Date,
+    @Body() body: UpdateBoardDto,
     @Param('projectId') projectId: number,
     @Param('boardId') boardId: number,
     @Req() req: IRequest,
   ): Promise<IResult> {
     const boardImg = req.file ? req.file.location : null;
 
-    if (!title && !content && !collaborators && !color && !deadlineAt) throw new HttpException('수정 내용을 입력해주세요', HttpStatus.BAD_REQUEST);
-
-    const boardDAO = { title, content, collaborators, color, deadlineAt };
-
-    return await this.boardService.updateBoard(projectId, boardId, boardDAO, boardImg);
+    return await this.boardService.updateBoard(projectId, boardId, body, boardImg);
   }
 
   // 보드(카드) 동일 컬럼 내 순서변경

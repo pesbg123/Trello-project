@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBoardDto, orderBoardDto } from 'src/_common/dtos/board.dto';
+import { CreateBoardDto, orderBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { Board } from 'src/_common/entities/board.entity';
 import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
@@ -18,8 +18,9 @@ export class BoardsService {
   // 보드(카드) 생성
   async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
     const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } }, relations: ['boards'] });
-    const entityManager = this.boardRepository.manager;
+    console.log(targetColumn);
 
+    const entityManager = this.boardRepository.manager;
     if (!targetColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
@@ -28,10 +29,10 @@ export class BoardsService {
       const newBoard = this.boardRepository.create({
         ...body,
         file: boardImg,
+        boardSequence: maxSequence + 1,
         user: { id: userId },
         project: { id: projectId },
-        boardColumn: { id: columnId },
-        boardSequence: maxSequence + 1,
+        boardColumn: targetColumn,
       });
 
       await transactionEntityManager.save(Board, newBoard);
@@ -41,13 +42,13 @@ export class BoardsService {
   }
 
   // 보드(카드) 수정
-  async updateBoard(projectId: number, boardId: number, boardDAO: any, boardImg: string): Promise<IResult> {
+  async updateBoard(projectId: number, boardId: number, body: UpdateBoardDto, boardImg: string): Promise<IResult> {
     const existBoard = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
     const newBoardImg = boardImg ? boardImg : existBoard.file;
 
     if (!existBoard) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
-    await this.boardRepository.save({ ...boardDAO, newBoardImg });
+    await this.boardRepository.update({ id: boardId, project: { id: projectId } }, { ...body, file: newBoardImg });
 
     return { result: true };
   }
