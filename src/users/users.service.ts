@@ -84,7 +84,7 @@ export class UsersService {
   async findUser(email: string): Promise<any> {
     const { id } = await this.userRepository.findOne({ where: { email } });
     return id;
-
+  }
   /** 토큰 재발급 */
   async refreshToken(refreshToken: string): Promise<IAccessToken> {
     const { id } = this.jwtService.verify(refreshToken, process.env.REFRESH_SECRET_KEY);
