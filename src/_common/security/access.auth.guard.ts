@@ -16,7 +16,7 @@ export class AccessAuthGuard implements CanActivate {
 
   async validate(request) {
     const requestAccessToken = request.headers.authorization.replace('Bearer ', '') || null;
-    const requestRefreshToken = request.body.refreshToken.replace('Bearer ', '') || null;
+    const requestRefreshToken = request.cookies.refreshToken.replace('Bearer ', '') || null;
 
     /** 캐시 메모리에 저장된 리프레시 토큰 유효성 검증 */
     const cacheValid: IRefreshTokenCacheData = await this.cacheManager.get(requestRefreshToken);
