@@ -12,7 +12,7 @@ export class CreateBoardDto {
   content: string;
 
   @IsNotEmpty({ message: '담당자를 입력해주세요' })
-  collaborators: string[];
+  collaborators: string;
 
   @IsString()
   @IsNotEmpty({ message: '색상을 입력해주세요' })

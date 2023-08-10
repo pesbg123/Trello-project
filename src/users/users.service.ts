@@ -10,7 +10,7 @@ import { IToken } from 'src/_common/interfaces/Token.interface';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { validatePassword } from 'src/_common/utils/password.compare';
 import { transfomrPassword } from 'src/_common/utils/password.hash';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { JwtService } from 'src/jwt/jwt.service';
@@ -99,5 +99,13 @@ export class UsersService {
     await this.cacheManager.set(refreshToken, { accessToken, id: findByUser.id }, Number(process.env.REFRESH_CACHE_TIME));
 
     return { accessToken };
+  }
+
+  async searchUserByEmail(email: string): Promise<User[]> {
+    const user = await this.userRepository.find({ where: { email }, select: ['id', 'email', 'name', 'imageUrl'] });
+
+    if (!user) throw new HttpException('해당 이메일을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
+    return user;
   }
 }

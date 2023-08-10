@@ -1,24 +1,33 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBoardDto, orderBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { Board } from 'src/_common/entities/board.entity';
 import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { EntityManager, Repository } from 'typeorm';
+import * as AWS from 'aws-sdk';
 
 @Injectable()
 export class BoardsService {
+  private s3: AWS.S3;
   constructor(
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
     @InjectRepository(BoardColumn)
     private readonly boardColumnRepository: Repository<BoardColumn>,
-  ) {}
+  ) {
+    this.s3 = new AWS.S3({
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_ACCESS_KEY_SECRET,
+      region: process.env.AWS_REGION,
+    });
+  }
 
   // 보드(카드) 생성
   async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
     const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } }, relations: ['boards'] });
-    console.log(targetColumn);
+
+    const collaboratorEmails = body.collaborators.split(' ').map((email) => email);
 
     const entityManager = this.boardRepository.manager;
     if (!targetColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -29,6 +38,7 @@ export class BoardsService {
       const newBoard = this.boardRepository.create({
         ...body,
         file: boardImg,
+        collaborators: collaboratorEmails,
         boardSequence: maxSequence + 1,
         user: { id: userId },
         project: { id: projectId },
@@ -108,5 +118,18 @@ export class BoardsService {
     await this.boardRepository.remove(targetBoard);
 
     return { result: true };
+  }
+
+  // 프론트 구현 후 테스트필요
+  async downloadFile(projectId: number, boardId: number, filename: string): Promise<Buffer> {
+    const key = `${projectId}/${boardId}/${filename}`;
+
+    try {
+      const data = await this.s3.getObject({ Bucket: process.env.BUCKET_NAME, Key: key }).promise();
+
+      return data.Body as Buffer;
+    } catch (error) {
+      throw new HttpException('파일을 다운로드할 수 없습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
