@@ -15,7 +15,8 @@ export class CommentsController {
   async createComment(@Param('projectId') projectId: number, @Param('boardId') boardId: number, @Req() req: IRequest): Promise<any> {
     //이 req.user은 로그인된 헤더의 토큰을 verify했을 때 내부에 담겨있는 payload입니다.
     const { id } = req.user;
-    await this.commentsService.createComment();
+
+    return await this.commentsService.createComment(req.body.content, id, projectId, boardId);
   }
 
   //조회 로직 validation check
