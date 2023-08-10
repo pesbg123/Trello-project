@@ -47,6 +47,7 @@
       <% if (header.isLogin) { %>
       <nav class="header-nav ms-auto">
         <ul class="d-flex align-items-center">
+          <button src="/assets/img/logo.png" onclick="test()">버튼</button>
           <li class="nav-item dropdown pe-3">
             <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
               <img src="<%= header.imageUrl %>" alt="Profile" class="rounded-circle" />
@@ -90,8 +91,7 @@
       <nav class="header-nav ms-auto">
         <ul class="d-flex align-items-center">
           <li class="nav-item dropdown pe-3">
-            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="/login">
-              <span class="d-none d-md-block ps-2"> 로그인 </span> </a
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="/login"> <span class="d-none d-md-block ps-2"> 로그인 </span> </a
             ><!-- End Profile Iamge Icon -->
           </li>
         </ul>

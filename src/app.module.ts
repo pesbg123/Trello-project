@@ -14,6 +14,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ViewModule } from './view/view.module';
 import { CommentsModule } from './comments/comments.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CommentsModule } from './comments/comments.module';
     ProjectsModule,
     MailModule,
     BoardColumnsModule,
+    CommentsModule,
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: async () => {
@@ -37,7 +39,7 @@ import { CommentsModule } from './comments/comments.module';
       },
     }),
     ViewModule,
-    CommentsModule,
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

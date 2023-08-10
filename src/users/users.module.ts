@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/_common/entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
 import { UploadMiddleware } from 'src/_common/middlewares/uploadMiddleware';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), EventsModule],
   exports: [UsersModule],
   controllers: [UsersController],
   providers: [UsersService, JwtService],
