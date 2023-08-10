@@ -4,10 +4,6 @@ export class CreateColumnDto {
   @IsString()
   @IsNotEmpty({ message: '컬럼의 이름을 입력해주세요.' })
   columnName: string;
-
-  @IsInt()
-  @IsNotEmpty({ message: '컬럼의 위치를 선택해주세요' })
-  sequence: number;
 }
 
 export class orderColumnDto {

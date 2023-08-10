@@ -20,7 +20,16 @@ export class BoardColumnsService {
 
     if (existColumn) throw new HttpException('이미 존재하는 컬럼입니다.', HttpStatus.CONFLICT);
 
-    const newColumn = this.boardColumnRepository.create({ ...body, name: columnName, project: { id: projectId } });
+    // 프로젝트에 해당하는 컬럼 전체 조회
+    const columns = await this.boardColumnRepository.find({
+      where: { project: { id: projectId } },
+      order: { sequence: 'DESC' },
+    });
+
+    const maxSequence = columns.length > 0 ? columns[0].sequence : 0;
+    const newSequence = maxSequence + 1;
+
+    const newColumn = this.boardColumnRepository.create({ ...body, sequence: newSequence, name: columnName, project: { id: projectId } });
     await this.boardColumnRepository.save(newColumn);
 
     return { result: true };
