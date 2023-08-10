@@ -15,6 +15,8 @@ import { EventsModule } from 'src/events/events.module';
 })
 export class UsersModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(UploadMiddleware).forRoutes({ path: '/users/signup', method: RequestMethod.POST });
+    consumer
+      .apply(UploadMiddleware)
+      .forRoutes({ path: '/users/signup', method: RequestMethod.POST }, { path: '/users', method: RequestMethod.PATCH });
   }
 }
