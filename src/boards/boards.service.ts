@@ -23,6 +23,22 @@ export class BoardsService {
     });
   }
 
+  // 보드(카드) 전체조회
+  async getBoards(projectId: number): Promise<Board[]> {
+    const boards = await this.boardRepository.find({ where: { project: { id: projectId } } });
+
+    return boards;
+  }
+
+  // 보드(카드) 디테일
+  async getBoardDetail(projectId: number, boardId: number): Promise<Board> {
+    const boardDetail = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
+
+    if (!boardDetail) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
+    return boardDetail;
+  }
+
   // 보드(카드) 생성
   async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
     const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } }, relations: ['boards'] });

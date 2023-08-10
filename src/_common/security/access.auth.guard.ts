@@ -15,8 +15,6 @@ export class AccessAuthGuard implements CanActivate {
   }
 
   async validate(request) {
-    // console.log(request.headers.authorization);
-    // console.log(request.body);
     const requestAccessToken = request.headers.authorization.replace('Bearer ', '') || null;
     const requestRefreshToken = request.body.refreshToken.replace('Bearer ', '') || null;
 

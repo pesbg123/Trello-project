@@ -12,6 +12,20 @@ import { Response } from 'express';
 export class BoardsController {
   constructor(private readonly boardService: BoardsService) {}
 
+  // 보드(카드) 전체조회
+  @Get('boards')
+  @UseGuards(AccessAuthGuard)
+  async getBoards(@Param('projectId') projectId: number) {
+    return await this.boardService.getBoards(projectId);
+  }
+
+  // 보드(카드) 디테일
+  @Get('boards/:boardId')
+  @UseGuards(AccessAuthGuard)
+  async getBoardDetail(@Param('projectId') projectId: number, @Param('boardId') boardId: number) {
+    return await this.boardService.getBoardDetail(projectId, boardId);
+  }
+
   // 보드(카드) 생성
   @Post(':columnId/boards')
   @UseGuards(AccessAuthGuard)
