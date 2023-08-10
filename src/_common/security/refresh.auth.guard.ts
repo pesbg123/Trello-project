@@ -18,7 +18,7 @@ export class RefreshAuthGuard implements CanActivate {
 
   async validate(request) {
     const requestAccessToken = request.headers.authorization.replace('Bearer ', '') || null;
-    const requestRefreshToken = request.body.refreshToken.replace('Bearer ', '') || null;
+    const requestRefreshToken = request.cookies.refreshToken.replace('Bearer ', '') || null;
 
     /** 리프레시 토큰 유효성 검증 */
     this.jwtService.verify(requestRefreshToken, process.env.REFRESH_SECRET_KEY);
