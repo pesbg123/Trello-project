@@ -1,23 +1,19 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await getProjects();
 });
-const projects = document.getElementById('allProjects');
-{
-  /* <ul id="projects-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav" >
-</ul> */
-}
+const projectList = document.getElementById('allProjects');
+
 async function getProjects() {
-  console.log(projects);
   $.ajax({
     method: 'GET',
     url: '/projects',
     success: (data) => {
       const result = data.projects;
-
-      result.forEach((projectList) => {
+      result.forEach((array) => {
         const project = `<li>
-                            <a href="/project"> <i class="bi bi-circle"></i><span>${projectList.name}</span> </a>
+                            <a href="/project?projectId=${array.id}"> <i class="bi bi-circle"></i><span>${array.name}</span> </a>
                         </li>`;
+        projectList.innerHTML += project;
       });
     },
     error: (error) => {

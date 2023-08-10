@@ -5,13 +5,11 @@ const registerBtn = document.getElementById('registerBtn');
 
 function projectRegister(event) {
   event.preventDefault();
-  const refreshToken = document.cookie.split('=')[1];
   const accessToken = localStorage.getItem('accessToken');
   const payload = {
     name: projectName.value,
     desc: projectDesc.value,
     backgroundColor: backgroundColor.value,
-    refreshToken,
   };
 
   $.ajax({

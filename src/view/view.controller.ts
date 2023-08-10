@@ -32,8 +32,9 @@ export class ViewController {
 
   @Get('project-register')
   @UseGuards(IsLogin)
+  @UseGuards(AuthGuard)
   @Render('project-register.ejs')
-  async profileRegister(@Req() req: IRequest) {
+  async projectRegister(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
     const header = await this.viewService.header(user);
 
