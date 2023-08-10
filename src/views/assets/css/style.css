@@ -15,7 +15,9 @@
   scroll-behavior: smooth;
 }
 
+html,
 body {
+  height: 100%;
   font-family: 'Nanum Gothic', sans-serif;
   background: #f6f9ff;
   color: #444444;
@@ -44,6 +46,8 @@ h6 {
 # Main
 --------------------------------------------------------------*/
 #main {
+  position: relative;
+  min-height: 100%;
   margin-top: 60px;
   padding: 20px 30px;
   transition: all 0.3s;
@@ -1220,7 +1224,11 @@ h6 {
 # Footer
 --------------------------------------------------------------*/
 .footer {
-  padding: 20px 0;
+  background-color: #f6f9ff;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 10px 0;
   font-size: 14px;
   transition: all 0.3s;
   border-top: 1px solid #cddfff;

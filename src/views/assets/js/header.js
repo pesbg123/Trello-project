@@ -14,6 +14,6 @@ logoutBtn.addEventListener('click', async () => {
   if (result) {
     localStorage.removeItem('accessToken');
     document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-    window.location.reload();
+    window.location.href = '/';
   }
 });
