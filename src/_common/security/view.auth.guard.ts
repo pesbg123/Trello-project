@@ -5,27 +5,23 @@ import { IRequest } from '../interfaces/request.interface';
 import { IRefreshTokenCacheData } from '../interfaces/refresh.cache.interface';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Response } from 'express';
 
 @Injectable()
-export class AccessAuthGuard implements CanActivate {
+export class AuthGuard implements CanActivate {
   constructor(private jwtService: JwtService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request: IRequest = context.switchToHttp().getRequest();
-    return this.validate(request);
+    const response: Response = context.switchToHttp().getResponse();
+    return this.validate(request, response);
   }
 
-  async validate(request) {
-    const requestAccessToken = request.headers.authorization.replace('Bearer ', '') || null;
-    const requestRefreshToken = request.cookies.refreshToken.replace('Bearer ', '') || null;
+  async validate(request: IRequest, response: Response): Promise<any> {
+    const requestRefreshToken = request.cookies.refreshToken || null;
 
-    /** 캐시 메모리에 저장된 리프레시 토큰 유효성 검증 */
+    if (!requestRefreshToken) return response.redirect('/login');
     const cacheValid: IRefreshTokenCacheData = await this.cacheManager.get(requestRefreshToken);
-    if (!cacheValid) throw new UnauthorizedException();
-
-    /** 토큰 유효성 검증 */
-    const payload = this.jwtService.verify(requestAccessToken, process.env.ACCESS_SECRET_KEY);
-
-    request.user = payload;
+    if (!cacheValid) return response.redirect('/login');
 
     return true;
   }
