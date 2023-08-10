@@ -132,7 +132,6 @@ export class ProjectsService {
   }
   async checkCreator(userId: number): Promise<IResult> {
     const checkCreator = await this.projectRepository.findOne({ where: { id: userId } });
-
     if (!checkCreator) throw new HttpException('접근 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
 
     return { result: true };
