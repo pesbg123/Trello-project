@@ -2,9 +2,9 @@ import { Controller, Get, Render, Req, UseGuards } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { Request } from 'express';
 import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
-import { IsLogin } from 'src/_common/security/isLogin.guard';
+import { IsLogin } from 'src/_common/middlewares/security/isLogin.guard';
 import { IRequest } from 'src/_common/interfaces/request.interface';
-import { AuthGuard } from 'src/_common/security/view.auth.guard';
+import { AuthGuard } from 'src/_common/middlewares/security/view.auth.guard';
 
 @Controller()
 export class ViewController {
@@ -22,7 +22,6 @@ export class ViewController {
 
   @Get('myprofile')
   @UseGuards(IsLogin)
-  @UseGuards(AuthGuard)
   @Render('myprofile.ejs')
   async myProfile(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
