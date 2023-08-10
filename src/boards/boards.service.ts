@@ -23,6 +23,13 @@ export class BoardsService {
     });
   }
 
+  // 보드 (카드) 조회
+  async getBoard(boardId: number): Promise<Object> {
+    const existBoard = await this.boardRepository.findOne({ where: { id: boardId } });
+    if (!existBoard) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    return existBoard;
+  }
+
   // 보드(카드) 생성
   async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
     const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } }, relations: ['boards'] });

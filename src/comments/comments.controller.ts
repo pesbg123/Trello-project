@@ -1,7 +1,8 @@
-import { Controller, Post, UseGuards, Get, Put, Delete, Param, Req } from '@nestjs/common';
+import { Controller, Post, UseGuards, Get, Put, Delete, Param, Req, Res, Body } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
 import { IRequest } from 'src/_common/interfaces/request.interface';
+import { Response } from 'express';
 
 @Controller('/projects/:projectId/boards/:boardId/comments')
 export class CommentsController {
@@ -12,11 +13,19 @@ export class CommentsController {
   // 2. 해당 프로젝트의 참여자일 경우에만 댓글 생성 권한이 주어진다.
   @Post()
   @UseGuards(AccessAuthGuard)
-  async createComment(@Param('projectId') projectId: number, @Param('boardId') boardId: number, @Req() req: IRequest): Promise<any> {
+  async createComment(
+    @Param('projectId') projectId: number,
+    @Param('boardId') boardId: number,
+    @Body('content') content: string,
+    @Req() req: IRequest,
+    @Res() res: Response,
+  ): Promise<void> {
     //이 req.user은 로그인된 헤더의 토큰을 verify했을 때 내부에 담겨있는 payload입니다.
     const { id } = req.user;
 
-    return await this.commentsService.createComment(req.body.content, id, projectId, boardId);
+    const data: string = await this.commentsService.createComment(content, id, projectId, boardId);
+    // 댓글 생성에 성공하면 200 OK
+    res.status(200).json({ message: data });
   }
 
   //조회 로직 validation check
