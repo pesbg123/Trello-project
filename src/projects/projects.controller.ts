@@ -2,7 +2,7 @@ import { Controller, Post, Body, Res, ValidationPipe, HttpStatus, Get, Param, Us
 import { ProjectsService } from './projects.service';
 import { ProjectDTO } from '../_common/dtos/project.dto';
 import { Response, Request } from 'express';
-import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
 import { IRequest } from 'src/_common/interfaces/request.interface';
 import { EmailDTO } from 'src/_common/dtos/email.dto';
 

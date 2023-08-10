@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
-import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
 import { Project } from 'src/_common/entities/project.entity';
 import { ProjectsService } from 'src/projects/projects.service';
 import { ProjectMember } from 'src/_common/entities/projectMember.entity';

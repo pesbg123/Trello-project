@@ -1,6 +1,6 @@
 import { Controller, Post, UseGuards, Get, Put, Delete, Param, Req } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
 import { IRequest } from 'src/_common/interfaces/request.interface';
 
 @Controller('/projects/:projectId/boards/:boardId/comments')
