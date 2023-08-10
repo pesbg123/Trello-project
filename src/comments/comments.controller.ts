@@ -33,8 +33,16 @@ export class CommentsController {
   // 2. 해당 프로젝트의 참여자일 경우에만 댓글 조회 권한이 주어진다.
   @Get()
   @UseGuards(AccessAuthGuard)
-  async getComments(@Param('projectId') projectId: number, @Param('boardId') boardId: number): Promise<any> {
-    await this.commentsService.getComments();
+  async getComments(
+    @Param('projectId') projectId: number,
+    @Param('boardId') boardId: number,
+    @Req() req: IRequest,
+    @Res() res: Response,
+  ): Promise<void> {
+    const { id } = req.user;
+
+    const data = await this.commentsService.getComments(id, projectId, boardId);
+    res.status(200).json(data);
   }
 
   //수정 로직 validation check

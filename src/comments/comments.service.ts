@@ -41,7 +41,19 @@ export class CommentsService {
     return '댓글 작성에 성공했습니다.';
   }
 
-  async getComments(): Promise<void> {}
+  async getComments(id: number, projectId: number, boardId: number): Promise<Comment[]> {
+    // 해당 프로젝트에 보드가 존재하는지 검증
+    const existBoard = await this.boardsService.getBoard(boardId);
+    if (!existBoard) {
+      return;
+    }
+    // 해당 프로젝트가 존재하고, 프로젝트 참여 인원인지 검증
+    const existProject = await this.projectsService.getProject(projectId, id);
+    if (!existProject) {
+      return;
+    }
+    return await this.commentRepository.find({ where: { board: { id: boardId } } });
+  }
   async updateComment(): Promise<void> {}
   async deleteComment(): Promise<void> {}
 }
