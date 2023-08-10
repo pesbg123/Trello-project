@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { SignupDto } from 'src/_common/dtos/signup.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
@@ -20,8 +20,7 @@ export class UsersController {
   @UsePipes(ValidationPipe)
   async signup(@Body() body: SignupDto, @Req() req: IRequest): Promise<IResult> {
     /** 프로필 사진 추가 필요  */
-    const imageUrl = req.file ? req.file.location : null;
-    return await this.usersService.signup(body, imageUrl);
+    return await this.usersService.signup(body);
   }
 
   @Post('login')
@@ -67,5 +66,11 @@ export class UsersController {
     const { refreshToken } = req.body;
     const { accessToken } = await this.usersService.refreshToken(refreshToken);
     return { accessToken };
+  }
+
+  @Get('search')
+  @UseGuards(AccessAuthGuard)
+  async searchUserByEmail(@Query('email') email: string): Promise<User[]> {
+    return await this.usersService.searchUserByEmail(email);
   }
 }
