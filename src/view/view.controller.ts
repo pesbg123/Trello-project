@@ -28,6 +28,16 @@ export class ViewController {
     return { title: 'IDLE', subtitle: '프로필', header };
   }
 
+  @Get('project-register')
+  @UseGuards(IsLogin)
+  @Render('project-register.ejs')
+  async profileRegister(@Req() req: IRequest) {
+    const user: IAccessPayload = req.user;
+    const header = await this.viewService.header(user);
+
+    return { title: 'IDLE', subtitle: '프로젝트 등록', header };
+  }
+
   /** No headers */
   @Get('login')
   @Render('login.ejs')
