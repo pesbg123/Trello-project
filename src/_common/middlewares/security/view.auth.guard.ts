@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from 'src/jwt/jwt.service';
-import { IRequest } from '../interfaces/request.interface';
-import { IRefreshTokenCacheData } from '../interfaces/refresh.cache.interface';
+import { IRequest } from '../../interfaces/request.interface';
+import { IRefreshTokenCacheData } from '../../interfaces/refresh.cache.interface';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Response } from 'express';
@@ -17,11 +17,11 @@ export class AuthGuard implements CanActivate {
   }
 
   async validate(request: IRequest, response: Response): Promise<any> {
-    const requestRefreshToken = request.cookies.refreshToken || null;
+    const requestAccessToken = request.cookies.accessToken;
 
-    if (!requestRefreshToken) return response.redirect('/login');
-    const cacheValid: IRefreshTokenCacheData = await this.cacheManager.get(requestRefreshToken);
-    if (!cacheValid) return response.redirect('/login');
+    if (!requestAccessToken) return response.redirect('/login');
+    const accessVerifyErrorHandle = this.jwtService.verifyErrorHandle(requestAccessToken, process.env.ACCESS_SECRET_KEY);
+    if (accessVerifyErrorHandle !== 'jwt normal') return response.redirect('/login');
 
     return true;
   }

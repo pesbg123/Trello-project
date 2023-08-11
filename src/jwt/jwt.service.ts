@@ -1,5 +1,6 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
+import { throwIfEmpty } from 'rxjs';
 
 @Injectable()
 export class JwtService {
@@ -15,7 +16,7 @@ export class JwtService {
         return this.decode(token);
       }
     } catch (error) {
-      throw new UnauthorizedException(error.message);
+      return error.message;
     }
   }
 
@@ -24,7 +25,7 @@ export class JwtService {
       const verify = jwt.verify(token, secretKey);
 
       if (verify) {
-        return 'jwt nomal';
+        return this.decodeErrorHandle(token);
       }
     } catch (error) {
       return error.message;
@@ -33,5 +34,16 @@ export class JwtService {
 
   decode(token: string) {
     return jwt.decode(token, { json: true });
+  }
+
+  decodeErrorHandle(token: string): string {
+    try {
+      const decode = jwt.decode(token, { json: true });
+      if (decode) {
+        return 'jwt normal';
+      }
+    } catch (error) {
+      return error.message;
+    }
   }
 }

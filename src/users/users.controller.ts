@@ -5,12 +5,14 @@ import { IResult } from 'src/_common/interfaces/result.interface';
 import { LoginDto } from 'src/_common/dtos/login.dto';
 import { Response } from 'express';
 import { IRequest } from 'src/_common/interfaces/request.interface';
-import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
 import { User } from 'src/_common/entities/user.entity';
 import { EditProfileDto } from 'src/_common/dtos/editProfile.dto';
 import { EditPasswordDto } from 'src/_common/dtos/editPassword.dto';
-import { RefreshAuthGuard } from 'src/_common/security/refresh.auth.guard';
+import { RefreshAuthGuard } from 'src/_common/middlewares/security/refresh.auth.guard';
 import { IAccessToken } from 'src/_common/interfaces/accessToken.interface';
+import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
+import { RemoveUserDto } from 'src/_common/dtos/removeUser.dto';
 
 @Controller('users')
 export class UsersController {
@@ -19,51 +21,70 @@ export class UsersController {
   @Post('signup')
   @UsePipes(ValidationPipe)
   async signup(@Body() body: SignupDto, @Req() req: IRequest): Promise<IResult> {
-    /** 프로필 사진 추가 필요  */
-    return await this.usersService.signup(body);
+    const imageUrl = req.file?.location;
+    return await this.usersService.signup(body, imageUrl);
   }
 
   @Post('login')
   async login(@Body() body: LoginDto, @Res() res: Response): Promise<Response> {
     const { accessToken, refreshToken } = await this.usersService.login(body);
     res.cookie('refreshToken', refreshToken);
+    res.cookie('accessToken', accessToken);
     //{ httpOnly: true }
-    return res.json({ accessToken });
+    return res.json({ result: true });
   }
 
   @Delete('logout')
   @UseGuards(AccessAuthGuard)
-  async logout(@Req() req: IRequest): Promise<IResult> {
-    const { refreshToken } = req.body;
-    return await this.usersService.logout(refreshToken);
+  logout(@Req() req: IRequest, @Res() res: Response): Response {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    const result = this.usersService.logout();
+    return res.json(result);
   }
 
   @Get()
   @UseGuards(AccessAuthGuard)
-  async profile(@Req() req: IRequest): Promise<User> {
+  async profile(@Req() req: IRequest): Promise<IAccessPayload> {
+    const user: IAccessPayload = req.user;
+    return this.usersService.profile(user);
+  }
+
+  @Delete()
+  @UseGuards(AccessAuthGuard)
+  async removeUser(@Req() req: IRequest, @Body() password: RemoveUserDto, @Res() res: Response): Promise<Response> {
     const { id } = req.user;
-    return await this.usersService.profile(id);
+    const result = await this.usersService.removeUser(id, password);
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return res.json(result);
   }
 
   @Patch()
   @UseGuards(AccessAuthGuard)
-  async editProfile(@Req() req: IRequest, @Body() editData: EditProfileDto): Promise<IResult> {
-    /** 프로필 사진 추가 필요  */
+  @UsePipes(ValidationPipe)
+  async editProfile(@Req() req: IRequest, @Res() res: Response, @Body() editData: EditProfileDto): Promise<Response> {
     const { id } = req.user;
-    return await this.usersService.editProfile(id, editData);
+    const imageUrl = req.file?.location;
+    const { accessToken } = await this.usersService.editProfile(id, editData, imageUrl);
+    res.cookie('accessToken', accessToken);
+    return res.json({ result: true });
   }
 
   @Patch('password')
   @UseGuards(AccessAuthGuard)
-  async editPassword(@Req() req: IRequest, @Body() editPassword: EditPasswordDto): Promise<IResult> {
-    const user = req.user;
-    return await this.usersService.editPassword(user, editPassword);
+  async editPassword(@Body() editPassword: EditPasswordDto, @Req() req: IRequest, @Res() res: Response): Promise<Response> {
+    const { id } = req.user;
+    const result = await this.usersService.editPassword(id, editPassword);
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return res.json(result);
   }
 
   @Post('refreshtoken')
   @UseGuards(RefreshAuthGuard)
   async refreshToken(@Req() req: IRequest): Promise<IAccessToken> {
-    const { refreshToken } = req.body;
+    const { refreshToken } = req.cookies;
     const { accessToken } = await this.usersService.refreshToken(refreshToken);
     return { accessToken };
   }
