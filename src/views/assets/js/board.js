@@ -6,6 +6,7 @@ let boardId = params.get('boardId');
 $(document).ready(async () => {
   await getColumns();
   getBoards();
+  $('#post-details-modal').modal('hide');
 });
 
 const refreshToken = document.cookie.split('=')[1];
@@ -227,10 +228,10 @@ async function getBoards() {
   });
 }
 
-// 보드디테일 조회 추가 (재혁님이 html코드 만든 후에 적용)
+// 보드디테일 조회 추가
 async function boardDetail(element) {
   const boardId = element.getAttribute('id');
-  // const modal = document.querySelector('#scrollingModal');
+  const modal = document.querySelector('#post-details-modal');
 
   const projectId = 11; // 임시
 
@@ -245,20 +246,23 @@ async function boardDetail(element) {
       xhr.setRequestHeader('authorization', accessToken);
     },
     success: (data) => {
+      let profileImg = '';
       console.log(data);
+      data.user.imageUrl
+        ? (profileImg = data.user.imageUrl)
+        : (profileImg = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+
       let Img = '';
 
-      // data.data.review_img
-      //   ? (Img = data.data.review_img)
-      //   : (Img = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+      data.file ? (Img = data.file) : (Img = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
 
-      // ${
-      //   data.isCreator ? `<button class="btn btn-primary" onclick="editBoard(${data.id})">수정</button>
-      //   <button type="button" class="btn btn-danger" onclick="deleteBoard(${data.id})">삭제</button>` : ''
-      // }
+      modal.querySelector('.modal-title').textContent = data.title;
+      modal.querySelector('.profile-img').innerHTML = profileImg;
+      modal.querySelector('.profile-name').textContent = data.user.name;
+      modal.querySelector('.board-img').innerHTML = Img;
+      modal.querySelector('.content').textContent = data.content;
 
-      const result = ``;
-      // modal.innerHTML = result;
+      $('#post-details-modal').modal('show');
     },
     error: (error) => {
       console.error(error);
@@ -269,6 +273,11 @@ async function boardDetail(element) {
 // 보드 수정
 async function editBoard(boardId) {
   const projectId = 11;
+
+  const formData = new FormData();
+  const title = await $.ajax({
+    method: '',
+  });
 }
 // 보드 삭제
 
@@ -392,3 +401,12 @@ createBoardBtn.addEventListener('click', async () => {
 });
 
 statusAndMembers();
+
+// board details modal open
+// 모든 컬럼에 대한 이벤트 위임 설정
+document.addEventListener('click', function (event) {
+  if (event.target.id === 'click-board') {
+    console.log('Modal button clicked');
+    $('#post-details-modal').modal('show');
+  }
+});

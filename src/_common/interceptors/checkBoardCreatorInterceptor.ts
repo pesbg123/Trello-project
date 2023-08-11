@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { IResult } from '../interfaces/result.interface';
 import { BoardsService } from 'src/boards/boards.service';
 
@@ -14,7 +14,8 @@ export class CheckBoardCreatorInterceptor implements NestInterceptor {
     const { projectId, boardId } = req.params;
 
     const isCreator = await this.boardService.checkBoardCreator(projectId, boardId, id);
-
-    return next.handle().pipe(map((data: IResult) => ({ ...data, isCreator })));
+    req.isCreator = isCreator;
+    console.log(isCreator);
+    return next.handle().pipe(tap((data: IResult) => ({ data })));
   }
 }
