@@ -42,10 +42,10 @@ export class BoardsService {
 
   // 보드(카드) 디테일
   async getBoardDetail(projectId: number, boardId: number): Promise<Board> {
-    const boardDetail = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
+    const boardDetail = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } }, relations: ['user', 'comments'] });
 
     if (!boardDetail) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-
+    console.log(boardDetail);
     return boardDetail;
   }
 
@@ -141,12 +141,20 @@ export class BoardsService {
 
   // 보드(카드) 삭제
   async deleteBoard(projectId: number, boardId: number): Promise<IResult> {
-    console.error();
     const targetBoard = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
 
     if (!targetBoard) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
     await this.boardRepository.remove(targetBoard);
+
+    return { result: true };
+  }
+
+  // 보드 생성자 확인
+  async checkBoardCreator(projectId: number, boardId: number, userId: number): Promise<IResult> {
+    const boardCreator = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId }, user: { id: userId } } });
+
+    if (!boardCreator) throw new HttpException('접근 권한이 없습니다', HttpStatus.UNAUTHORIZED);
 
     return { result: true };
   }

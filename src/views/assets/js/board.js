@@ -6,7 +6,7 @@ let boardId = params.get('boardId');
 $(document).ready(async () => {
   await getColumns();
   getBoards();
-  $('#post-details-modal').modal('show');
+  $('#post-details-modal').modal('hide');
 });
 
 const refreshToken = document.cookie.split('=')[1];
@@ -152,7 +152,6 @@ async function getBoards() {
       xhr.setRequestHeader('authorization', accessToken);
     },
     success: (data) => {
-      console.log(data);
       const columns = {};
 
       // 컬럼 아이디별로 보드를 묶어줌
@@ -176,7 +175,7 @@ async function getBoards() {
           columnHtml += `<div class="card mb-3">
                           <div id="boards-container" class="card-body">
                             <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
-                            <p class="card-text" id="click-board">${board.content}</p>
+                            <p class="card-text" id=${board.id} onclick="boardDetail(this)"> ${board.content}</p>
                             <p class="card-deadline">${board.deadlineAt}</p>
                             <div class="d-flex justify-content-between">
                            </div>
@@ -217,7 +216,7 @@ async function getBoards() {
           const boardId = targetBoard.find('.card-title').attr('data-board-id');
           const newColumnId = targetBoard.closest('.card-body').attr('data-column-id');
           const newBoardSequence = targetBoard.index() + 1;
-          console.log(newColumnId);
+
           orderBoardSequence(boardId, newBoardSequence);
           moveBoard(boardId, newColumnId); // 보드를 새로운 컬럼으로 이동
         },
@@ -228,19 +227,64 @@ async function getBoards() {
     },
   });
 }
-// 보드디테일 조회 추가
 
-// 보드 생성
-async function createBoard() {}
+// 보드디테일 조회 추가
+async function boardDetail(element) {
+  const boardId = element.getAttribute('id');
+  const modal = document.querySelector('#post-details-modal');
+
+  const projectId = 11; // 임시
+
+  await $.ajax({
+    method: 'GET',
+    url: `projects/${projectId}/boards/${boardId}`,
+    headers: {
+      Accept: 'application/json',
+    },
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', accessToken);
+    },
+    success: (data) => {
+      let profileImg = '';
+      console.log(data);
+      data.user.imageUrl
+        ? (profileImg = data.user.imageUrl)
+        : (profileImg = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+
+      let Img = '';
+
+      data.file ? (Img = data.file) : (Img = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+
+      modal.querySelector('.modal-title').textContent = data.title;
+      modal.querySelector('.profile-img').innerHTML = profileImg;
+      modal.querySelector('.profile-name').textContent = data.user.name;
+      modal.querySelector('.board-img').innerHTML = Img;
+      modal.querySelector('.content').textContent = data.content;
+
+      $('#post-details-modal').modal('show');
+    },
+    error: (error) => {
+      console.error(error);
+    },
+  });
+}
 
 // 보드 수정
+async function editBoard(boardId) {
+  const projectId = 11;
 
+  const formData = new FormData();
+  const title = await $.ajax({
+    method: '',
+  });
+}
 // 보드 삭제
 
 // 보드 동일 컬럼 내 이동
 async function orderBoardSequence(boardId, newBoardSequence) {
   const projectId = 11; // 임시
-  console.log(boardId, newBoardSequence);
+
   await $.ajax({
     method: 'PATCH',
     url: `/projects/${projectId}/boards/${boardId}/order`,
@@ -262,7 +306,7 @@ async function orderBoardSequence(boardId, newBoardSequence) {
 // 보드 다른 컬럼으로 이동
 async function moveBoard(boardId, columnId) {
   const projectId = 11; // 임시
-  console.log(boardId, columnId);
+
   await $.ajax({
     method: 'PATCH',
     url: `/projects/${projectId}/boards/${boardId}/${columnId}/move`,
