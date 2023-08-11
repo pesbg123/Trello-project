@@ -15,6 +15,7 @@ import { TokenValidMiddleware } from 'src/_common/middlewares/token.valid.middle
   imports: [TypeOrmModule.forFeature([Project, ProjectMember, User])],
   controllers: [ProjectsController],
   providers: [ProjectsService, JwtService, AccessAuthGuard, UsersService, MailService],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {
   configure(consumer: MiddlewareConsumer) {
