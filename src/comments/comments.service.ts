@@ -14,7 +14,8 @@ export class CommentsService {
     private boardsService: BoardsService,
   ) {}
 
-  async createComment(content: string, id: number, projectId: number, boardId: number): Promise<string> {
+  // 댓글 생성
+  async createComment(content: string, id: number, projectId: number, boardId: number, replyId: string): Promise<string> {
     // 데이터 유효성 검증
     if (!content) {
       throw new BadRequestException('댓글을 입력해주세요.');
@@ -29,18 +30,30 @@ export class CommentsService {
     if (!existBoard) {
       return;
     }
-    // 댓글 생성
-    const newComment = this.commentRepository.create({
-      content,
-      user: { id },
-      board: { id: boardId },
-    });
     // 댓글 저장
-    await this.commentRepository.save(newComment);
-
-    return '댓글 작성에 성공했습니다.';
+    if (!replyId) {
+      const newComment = this.commentRepository.create({
+        content,
+        user: { id },
+        board: { id: boardId },
+      });
+      await this.commentRepository.save(newComment);
+      return '댓글 작성에 성공했습니다.';
+    } else if (replyId) {
+      const newReply = this.commentRepository.create({
+        replyId,
+        content,
+        user: { id },
+        board: { id: boardId },
+      });
+      await this.commentRepository.save(newReply);
+      return '대댓글 작성에 성공했습니다.';
+    } else {
+      throw new HttpException('댓글 수정중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
+  // 댓글 조회
   async getComments(id: number, projectId: number, boardId: number): Promise<Comment[]> {
     // 해당 프로젝트에 보드가 존재하는지 검증
     const existBoard = await this.boardsService.getBoard(boardId);
@@ -54,6 +67,55 @@ export class CommentsService {
     }
     return await this.commentRepository.find({ where: { board: { id: boardId } } });
   }
-  async updateComment(): Promise<void> {}
-  async deleteComment(): Promise<void> {}
+
+  // 댓글 수정
+  async updateComment(id: number, projectId: number, boardId: number, commentId: number, content: string): Promise<string> {
+    // 해당 프로젝트에 보드가 존재하는지 검증
+    const existBoard = await this.boardsService.getBoard(boardId);
+    if (!existBoard) {
+      return;
+    }
+    // 해당 프로젝트가 존재하고, 프로젝트 참여 인원인지 검증
+    const existProject = await this.projectsService.getProject(projectId, id);
+    if (!existProject) {
+      return;
+    }
+    // 해당 코멘트가 존재하는지 (본인이 작성한건지 검증)
+    const existComment = await this.commentRepository.findOne({ where: { id: commentId, user: { id } } });
+    if (!existComment) {
+      throw new HttpException('해당 댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    // 코멘트 수정
+    const result = await this.commentRepository.update({ id: commentId }, { content });
+    if (!result.affected) {
+      throw new HttpException('댓글 수정중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    return '댓글 수정에 성공했습니다.';
+  }
+
+  // 댓글 삭제
+  async deleteComment(id: number, projectId: number, boardId: number, commentId: number): Promise<string> {
+    // 해당 프로젝트에 보드가 존재하는지 검증
+    const existBoard = await this.boardsService.getBoard(boardId);
+    if (!existBoard) {
+      return;
+    }
+    // 해당 프로젝트가 존재하고, 프로젝트 참여 인원인지 검증
+    const existProject = await this.projectsService.getProject(projectId, id);
+    if (!existProject) {
+      return;
+    }
+    // 해당 코멘트가 존재하는지 (본인이 작성한건지 검증)
+    const targetComment = await this.commentRepository.findOne({ where: { id: commentId, user: { id } } });
+    if (!targetComment) {
+      throw new HttpException('해당 댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    }
+    // 댓글 삭제
+    const data = await this.commentRepository.remove(targetComment);
+    if (data.id === undefined) {
+      return '댓글을 성공적으로 삭제했습니다.';
+    } else {
+      throw new HttpException('댓글 삭제중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }
