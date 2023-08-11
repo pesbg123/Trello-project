@@ -1230,10 +1230,10 @@ h6 {
 --------------------------------------------------------------*/
 .footer {
   background-color: #f6f9ff;
-  position: relative;
-  transform: translateY(0%);
+  position: fixed;
+  bottom: 0;
   width: 100%;
-  padding: 20px 0;
+  padding: 10px 0;
   font-size: 14px;
   transition: all 0.3s;
   border-top: 1px solid #cddfff;

@@ -1,68 +1,9 @@
-// import {
-//   ConnectedSocket,
-//   MessageBody,
-//   OnGatewayConnection,
-//   OnGatewayDisconnect,
-//   SubscribeMessage,
-//   WebSocketGateway,
-//   WebSocketServer,
-// } from '@nestjs/websockets';
-// import { Server, Socket } from 'socket.io';
-// import { onlineMap } from './online-map';
-// import { Logger } from '@nestjs/common';
-// import { JwtService } from 'src/jwt/jwt.service';
-
-// @WebSocketGateway({ cors: { origin: '*' } })
-// export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
-//   constructor(private jwtService: JwtService) {}
-//   @WebSocketServer() server: Server;
-//   logger = new Logger();
-
-//   //emit을 받았을 때
-//   @SubscribeMessage('test')
-//   handleEvent(@MessageBody() data: any) {
-//     let user = [];
-//     for (let key in onlineMap) {
-//       if (onlineMap[key] / 1 === data.id) user.push(key);
-//     }
-//     user.forEach((sock) => {
-//       //해당 로그인 유저에게 보냄
-//       this.server.to(sock).emit('tester', data);
-//     });
-//   }
-
-//   @SubscribeMessage('login')
-//   handleLogin(@MessageBody() data: { id: number; channels: number[] }, @ConnectedSocket() socket: Socket) {
-//     const newNamespace = socket.nsp;
-//     console.log('login', newNamespace);
-//     onlineMap[socket.nsp.name][socket.id] = data.id;
-//     newNamespace.emit('onlineList', Object.values(onlineMap[socket.nsp.name]));
-//     data.channels.forEach((channel: number) => {
-//       console.log('join', socket.nsp.name, channel);
-//       socket.join(`${socket.nsp.name}-${channel}`);
-//     });
-//   }
-
-//   async handleConnection(@ConnectedSocket() socket: Socket): Promise<any> {
-//     const authorization = socket.request.headers.cookie;
-//     if (!authorization) return;
-//     const token = authorization.split('=')[1];
-
-//     const decode = await this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
-//     onlineMap[socket.id] = decode.id;
-//     console.log(onlineMap);
-//   }
-
-//   handleDisconnect(@ConnectedSocket() socket: Socket) {
-//     delete onlineMap[socket.id];
-//   }
-// }
 import { ConnectedSocket, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from 'src/jwt/jwt.service';
 
 @WebSocketGateway()
-export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private jwtService: JwtService) {}
 
   @WebSocketServer()
@@ -75,9 +16,9 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   async handleConnection(@ConnectedSocket() client: Socket): Promise<any> {
     const authorization = client.request.headers.cookie;
     if (!authorization) return;
-    const token = authorization.split('=')[2];
+    const token = authorization.split('=')[1];
 
-    const decode = await this.jwtService.verify(token, process.env.ACCESS_SECRET_KEY);
+    const decode = await this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
     this.connectedClients[client.id] = decode.id;
     console.log(this.connectedClients);
   }

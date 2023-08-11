@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards, UseInterc
 import { BoardColumnsService } from './board-columns.service';
 import { CreateColumnDto, orderColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
-import { AccessAuthGuard } from 'src/_common/security/access.auth.guard';
+import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
 import { CheckCreatorInterceptor } from 'src/_common/interceptors/checkCreatorInterceptor';
 
 @Controller('projects/:projectId/columns')

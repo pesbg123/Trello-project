@@ -46,6 +46,23 @@
       crossorigin="anonymous"
     ></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+      const socket = io('/');
+      function test() {
+        const data = {
+          id: 5,
+          tilte: '쮓',
+          address: '상하이',
+        };
+        socket.emit('test', data);
+      }
+
+      //해당 로그인 되어있는 유저가 받음
+      socket.on('tester', (data) => {
+        console.log('이게 연결된다고?? ' + data.tilte, data.address);
+      });
+    </script>
   </head>
 
   <body>
