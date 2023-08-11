@@ -32,7 +32,7 @@ async function getColumns() {
       data.forEach((column) => {
         result += `<div class="col-lg-4">
                     <div class="card">
-                      <div class="card-header" data-sequence=${column.sequence}>${column.name}</div>
+                      <div class="card-header" data-sequence=${column.sequence} onclick="openUpdateColumnModal(this)" id=${column.id}>${column.name}</div>
                       <div class="card-body" data-column-id="${column.id}">
                       </div>
                         <!-- 보드 카드 추가 될 부분 -->
@@ -40,6 +40,7 @@ async function getColumns() {
                           <button type="button" id="add-board-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scrollingModal">
                           보드 추가
                         </button>
+                        <button type="button" class="btn btn-secondary" onclick="deleteColumn(this)" id=${column.id}>보드 삭제</button>
                       </div>
                     </div>
                   </div>`;
@@ -65,6 +66,7 @@ async function getColumns() {
   });
 }
 
+// 컬럼 이동
 async function moveColumnSequence(columnId, newSequence) {
   try {
     const projectId = 11; // 프로젝트 ID
@@ -133,9 +135,97 @@ async function createColumn() {
   }
 }
 
-// 컬럼명 수정 추가
+// 컬럼 수정 모달 열기
+function openUpdateColumnModal(element) {
+  const columnNameInput = document.querySelector('#update-columnName-input');
+  columnNameInput.value = '';
+
+  const columnId = element.getAttribute('id');
+
+  $('#update-column-modal').modal('show');
+
+  // 업데이트버튼에 id값을 넣고 updateColumn에 넘겨줌
+  const updateButton = document.querySelector('#update-column-modal .btn-primary');
+  updateButton.setAttribute('id', columnId);
+}
+
+// 컬럼명 수정
+async function updateColumn() {
+  const columnName = document.querySelector('#update-columnName-input').value;
+  const updateButton = document.querySelector('#update-column-modal .btn-primary');
+  const columnId = updateButton.getAttribute('id');
+  const projectId = 11; // 임시
+
+  try {
+    await $.ajax({
+      method: 'PATCH',
+      url: `projects/${projectId}/columns/${columnId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      data: JSON.stringify({ columnName }),
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: '컬럼 수정 완료',
+        }).then(() => {
+          window.location.reload();
+        });
+
+        $('#update-column-modal').modal('hide');
+      },
+      error: () => {},
+    });
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
 
 // 컬럼 삭제 추가
+async function deleteColumn(element) {
+  const columnId = element.getAttribute('id');
+  const projectId = 11;
+
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `projects/${projectId}/columns/${columnId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: '컬럼 삭제 완료',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: () => {},
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
 
 // 보드 조회
 async function getBoards() {
@@ -247,21 +337,25 @@ async function boardDetail(element) {
     },
     success: (data) => {
       let profileImg = '';
-      console.log(data);
-      data.user.imageUrl
-        ? (profileImg = data.user.imageUrl)
-        : (profileImg = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+      console.log(data.id);
+      data.user.imageUrl ? (profileImg = data.user.imageUrl) : (profileImg = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       let Img = '';
 
-      data.file ? (Img = data.file) : (Img = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+      data.file ? (Img = data.file) : (Img = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       modal.querySelector('.modal-title').textContent = data.title;
       modal.querySelector('.profile-img').innerHTML = profileImg;
       modal.querySelector('.profile-name').textContent = data.user.name;
       modal.querySelector('.board-img').innerHTML = Img;
       modal.querySelector('.content').textContent = data.content;
-
+      modal.querySelector('.button-container').innerHTML = `
+      <button type="button" class="btn btn-primary" onclick="openEditBoardModal(this)" id=${data.id}>수정</button>
+      <button type="button" class="btn btn-secondary">삭제</button>
+      `;
+      modal.querySelector('.comment-container').innerHTML = `
+      <input type="text" id="comment-input" placeholder="댓글을 입력하세요" />
+      <button type="button" class="comment-create-btn" data-bs-dismiss="modal" onclick="createComment(this)" id=${data.id}>작성</button>`;
       $('#post-details-modal').modal('show');
     },
     error: (error) => {
@@ -270,13 +364,17 @@ async function boardDetail(element) {
   });
 }
 
-// 보드 수정
-async function editBoard(boardId) {
-  const projectId = 11;
+// 보드 수정 모달
+function openEditBoardModal(data) {}
 
+// 보드 수정
+async function editBoard(button) {
+  const projectId = 11;
+  const boardId = button.getAttribute('id');
   const formData = new FormData();
-  const title = await $.ajax({
-    method: '',
+
+  await $.ajax({
+    method: 'PATCH',
   });
 }
 // 보드 삭제
@@ -296,7 +394,7 @@ async function orderBoardSequence(boardId, newBoardSequence) {
       xhr.setRequestHeader('authorization', accessToken);
     },
     data: JSON.stringify({ newBoardSequence }),
-    success: (data) => {},
+    success: () => {},
     error: (error) => {
       console.error(error);
     },
@@ -317,7 +415,7 @@ async function moveBoard(boardId, columnId) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', accessToken);
     },
-    success: (data) => {},
+    success: () => {},
     error: (error) => {
       console.error(error);
     },
@@ -401,12 +499,3 @@ createBoardBtn.addEventListener('click', async () => {
 });
 
 statusAndMembers();
-
-// board details modal open
-// 모든 컬럼에 대한 이벤트 위임 설정
-document.addEventListener('click', function (event) {
-  if (event.target.id === 'click-board') {
-    console.log('Modal button clicked');
-    $('#post-details-modal').modal('show');
-  }
-});

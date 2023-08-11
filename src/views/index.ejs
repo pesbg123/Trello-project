@@ -162,6 +162,7 @@
             <button type="button" id="add-board-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scrollingModal">
               보드 추가
             </button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">보드 삭제</button>
           </div>
         </div>
       </div>
@@ -180,6 +181,24 @@
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
             <button type="button" class="btn btn-primary" onclick="createColumn()">추가</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- 컬럼 수정 모달 -->
+    <div class="modal fade" id="update-column-modal" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">컬럼 수정</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input placeholder="수정할 컬럼명을 입력해주세요" id="update-columnName-input" />
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            <button type="button" class="btn btn-primary" onclick="updateColumn()">수정</button>
           </div>
         </div>
       </div>
@@ -270,9 +289,9 @@
                   <img src="https://ca.slack-edge.com/T043597JK8V-U055EL25G5D-00f511dc3449-512" />
                 </div>
                 <p class="profile-name">username</p>
-                <div>
-                  <button>보더 수정</button>
-                  <button>보더 삭제</button>
+                <div class="button-container">
+                  <button type="button" class="btn btn-primary">수정</button>
+                  <button type="button" class="btn btn-secondary">삭제</button>
                 </div>
               </div>
               <!-- 중앙에 게시물 이미지 및 내용 등의 요소를 추가 -->
@@ -285,7 +304,7 @@
               </p>
               <!-- 댓글 작성 인풋 박스 및 버튼 -->
               <div class="input-group">
-                <div>
+                <div class="comment-container">
                   <input type="text" id="comment-input" placeholder="댓글을 입력하세요" />
                   <button type="button" id="comment-create-btn" data-bs-dismiss="modal">작성</button>
                 </div>
