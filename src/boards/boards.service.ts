@@ -25,7 +25,11 @@ export class BoardsService {
 
   // 보드(카드) 전체조회
   async getBoards(projectId: number): Promise<Board[]> {
-    const boards = await this.boardRepository.find({ where: { project: { id: projectId } } });
+    const boards = await this.boardRepository.find({
+      where: { project: { id: projectId } },
+      relations: ['boardColumn'],
+      order: { boardSequence: 'DESC' },
+    });
 
     return boards;
   }

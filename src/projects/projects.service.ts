@@ -131,9 +131,16 @@ export class ProjectsService {
     await this.projectMemberRepository.update({ project: { id: projectId }, user: { id } }, { participation: true });
   }
   async checkCreator(userId: number): Promise<IResult> {
-    const checkCreator = await this.projectRepository.findOne({ where: { id: userId } });
-    if (!checkCreator) throw new HttpException('접근 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+    const checkCreator = await this.projectRepository.findOne({ where: { user: { id: userId } } });
 
+    if (!checkCreator) throw new HttpException('접근 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+    return { result: true };
+  }
+
+  async checkPermission(projectId: number, userId: number): Promise<IResult> {
+    const user = await this.projectMemberRepository.findOne({ where: { project: { id: projectId }, user: { id: userId }, participation: true } });
+
+    if (!user) throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
     return { result: true };
   }
 }

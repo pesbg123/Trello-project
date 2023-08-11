@@ -277,6 +277,11 @@ h6 {
   box-shadow: none;
 }
 
+/* Add button */
+#add-column-btn {
+  margin-bottom: 10px;
+}
+
 /* Accordion */
 .accordion-item {
   border: 1px solid #ebeef4;

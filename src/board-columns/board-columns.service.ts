@@ -12,6 +12,13 @@ export class BoardColumnsService {
     private boardColumnRepository: Repository<BoardColumn>,
   ) {}
 
+  // 보드컬럼 조회
+  async getColumn(projectId: number): Promise<BoardColumn[]> {
+    const columns = await this.boardColumnRepository.find({ where: { project: { id: projectId } }, order: { sequence: 'ASC' } });
+
+    return columns;
+  }
+
   // 보드컬럼 생성
   async createColumn(body: CreateColumnDto, projectId: number): Promise<IResult> {
     const { columnName } = body;
@@ -39,12 +46,11 @@ export class BoardColumnsService {
   async orderColumn(body: orderColumnDto, projectId: number, columnId: number): Promise<IResult> {
     const { newSequence } = body;
     const entityManager = this.boardColumnRepository.manager;
-
-    const findColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } } });
-
-    if (!findColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-
     await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const findColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } } });
+
+      if (!findColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
       const targetColumn = await this.boardColumnRepository.findOne({ where: { sequence: newSequence } });
 
       /* 시퀀스번호가 일치하는 컬럼이 있다면 번호를 교체해줌,
@@ -55,6 +61,7 @@ export class BoardColumnsService {
         const changeSequence = findColumn.sequence;
         findColumn.sequence = targetColumn.sequence;
         targetColumn.sequence = changeSequence;
+        console.log(findColumn, targetColumn);
         await transactionEntityManager.save(BoardColumn, [findColumn, targetColumn]);
       }
 
