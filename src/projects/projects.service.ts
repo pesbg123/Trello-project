@@ -58,7 +58,10 @@ export class ProjectsService {
     });
     if (!existAuthorization) throw new HttpException('해당 프로젝트의 조회 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
 
-    const project = await this.projectRepository.findOne({ where: { id: projectId } });
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ['projectMembers', 'projectMembers.user', 'boardColumns'],
+    });
 
     const projectMembers = await this.projectMemberRepository
       .createQueryBuilder('member')

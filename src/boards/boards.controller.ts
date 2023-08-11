@@ -27,18 +27,13 @@ export class BoardsController {
   }
 
   // 보드(카드) 생성
-  @Post(':columnId/boards')
+  @Post('boards')
   @UseGuards(AccessAuthGuard)
   @UsePipes(ValidationPipe)
-  async createBoard(
-    @Body() body: CreateBoardDto,
-    @Param('projectId') projectId: number,
-    @Param('columnId') columnId: number,
-    @Req() req: IRequest,
-  ): Promise<IResult> {
+  async createBoard(@Body() body: CreateBoardDto, @Req() req: IRequest, @Param('projectId') projectId: number): Promise<IResult> {
     const { id } = req.user;
     const boardImg = req.file ? req.file.location : null;
-    return await this.boardService.createBoard(body, id, projectId, columnId, boardImg);
+    return await this.boardService.createBoard(body, id, boardImg, projectId);
   }
 
   // 보드(카드) 수정

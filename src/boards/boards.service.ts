@@ -34,7 +34,7 @@ export class BoardsService {
     const boards = await this.boardRepository.find({
       where: { project: { id: projectId } },
       relations: ['boardColumn'],
-      order: { boardSequence: 'DESC' },
+      order: { boardSequence: 'ASC' },
     });
 
     return boards;
@@ -50,10 +50,15 @@ export class BoardsService {
   }
 
   // 보드(카드) 생성
-  async createBoard(body: CreateBoardDto, userId: number, projectId: number, columnId: number, boardImg: string): Promise<IResult> {
-    const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId, project: { id: projectId } }, relations: ['boards'] });
+  async createBoard(body: CreateBoardDto, userId: number, boardImg: string, projectId: number): Promise<IResult> {
+    const targetColumn = await this.boardColumnRepository.findOne({
+      where: { id: body.columnId, project: { id: projectId } },
+      relations: ['boards'],
+    });
 
-    const collaboratorEmails = body.collaborators.split(' ').map((email) => email);
+    const collaborators = String(body.collaborators)
+      .split(',')
+      .map((x) => Number(x));
 
     const entityManager = this.boardRepository.manager;
     if (!targetColumn) throw new HttpException('해당 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -64,7 +69,7 @@ export class BoardsService {
       const newBoard = this.boardRepository.create({
         ...body,
         file: boardImg,
-        collaborators: collaboratorEmails,
+        collaborators: collaborators,
         boardSequence: maxSequence + 1,
         user: { id: userId },
         project: { id: projectId },

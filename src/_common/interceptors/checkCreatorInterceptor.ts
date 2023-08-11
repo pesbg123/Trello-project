@@ -11,7 +11,6 @@ export class CheckCreatorInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const req = context.switchToHttp().getRequest();
     const { id } = req.user;
-
     await this.projectService.checkCreator(id);
 
     return next.handle().pipe(
