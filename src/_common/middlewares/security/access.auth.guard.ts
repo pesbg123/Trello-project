@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { JwtService } from 'src/jwt/jwt.service';
 import { IRequest } from '../../interfaces/request.interface';
@@ -12,13 +12,7 @@ export class AccessAuthGuard implements CanActivate {
   }
 
   async validate(request) {
-    const requestAccessToken = request.cookies.accessToken;
-
-    /** 토큰 유효성 검증 */
-    const payload = this.jwtService.verify(requestAccessToken, process.env.ACCESS_SECRET_KEY);
-
-    request.user = payload;
-
+    if (!request.user) throw new UnauthorizedException('로그인이 필요합니다.');
     return true;
   }
 }
