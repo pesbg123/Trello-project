@@ -112,16 +112,43 @@
         height: 100%;
       }
 
-      .comment-container {
-        width: 80%;
-        /* margin-top: 5rem; */
+      .comment-txt {
+        margin: auto;
+        width: 90%;
       }
 
-      .comment-list {
-        margin-top: 5rem;
-        height: 400px;
-        width: 100%;
-        background-color: #98999c;
+      .dots {
+
+        height: 4px;
+        width: 4px;
+        margin-bottom: 2px;
+        background-color: #bbb;
+        border-radius: 50%;
+        display: inline-block;
+      }
+
+      .icons i {
+
+        margin-left: 8px;
+      }
+
+      .reply {
+
+        margin-left: 12px;
+      }
+
+      .reply small {
+
+        color: rgb(18, 103, 156);
+
+      }
+
+
+      .reply small:hover {
+
+
+        cursor: pointer;
+        color: rgb(0, 49, 245);
       }
     </style>
     <main id="main" class="main">
@@ -264,7 +291,7 @@
           <div class="modal-dialog modal-dialog-centered" style="min-width: 530px; max-width: 40%;">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Title</h5>
+                <h5 class="modal-title" id="exampleModalLabel" style="font-size: 2rem;">제목</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body-container">
@@ -282,7 +309,8 @@
                   </div>
                   <!-- 중앙에 게시물 이미지 및 내용 등의 요소를 추가 -->
                   <div class="board-img">
-                    <img src="https://climate.onep.go.th/wp-content/uploads/2020/01/default-image.jpg">
+                    <img src="https://climate.onep.go.th/wp-content/uploads/2020/01/default-image.jpg"
+                      style="border-radius: 5px;">
                   </div>
                   <p
                     style="width: 80%; text-align: center; margin-top: 2rem; font-size: 1.5rem; overflow-wrap: break-word; margin: 1rem;">
@@ -297,9 +325,45 @@
                     </div>
                   </div>
                   <!-- 댓글 목록 -->
-                  <div class="comment-container">
-                    <div class="comment-list">
-                      comment
+                  <div class="container mt-5">
+                    <div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
+                      <div class="col-md-10">
+                        <div class="headings d-flex justify-content-between align-items-center mb-3">
+                          <h5>댓글 수 (0)</h5>
+                          <div class="buttons">
+                          </div>
+                        </div>
+                        <!-- 댓글 하나  -->
+                        <div class="card p-3 mt-2">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div class="user d-flex flex-row align-items-center">
+                              <img src="https://emoji.slack-edge.com/T043597JK8V/pepe_cry/36e5a63badf52613.png"
+                                width="40" class="user-img rounded-circle mr-2">
+                              <span><small class="font-weight-bold text-primary"
+                                  style="margin-left: 1rem; font-size: 1rem;">nickname</small>
+                            </div>
+                            <small>1일전</small>
+                            </span>
+                          </div>
+                          <div class="comment-txt">
+                            <p>댓글 테스트 입니다.댓글 테스트 입니다.댓글 테스트 입니다.댓글 테스트 입니다.댓글 테스트 입니다.댓글 테스트 입니다.댓글 테스트 입니다.댓글 테스트 입니다.
+                            </p>
+                          </div>
+
+                          <div class="action d-flex justify-content-between mt-2 align-items-center">
+                            <div class="reply px-4">
+                              <small>답글</small>
+                              <span class="dots"></span>
+                              <small>수정</small>
+                              <span class="dots"></span>
+                              <small>삭제</small>
+                            </div>
+                            <div class="icons align-items-center">
+                              <i class="fa fa-check-circle-o check-icon text-primary"></i>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -311,9 +375,11 @@
             </div>
           </div>
         </div>
-
-
-
+        </div>
+        </div>
+        </div>
+        </div>
+        </div>
         <!--  End Scrolling Modal details -->
       </section>
     </main>
