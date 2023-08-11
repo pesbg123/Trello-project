@@ -155,9 +155,8 @@ export class ProjectsService {
     return { result: true };
   }
 
-  async checkPermission(projectId: number, userId: number): Promise<IResult> {
+  async checkMember(projectId: number, userId: number): Promise<IResult> {
     const user = await this.projectMemberRepository.findOne({ where: { project: { id: projectId }, user: { id: userId }, participation: true } });
-
     if (!user) throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
     return { result: true };
   }
