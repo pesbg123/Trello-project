@@ -20,14 +20,13 @@ import { TokenValidMiddleware } from 'src/_common/middlewares/token.valid.middle
   imports: [TypeOrmModule.forFeature([Board, User, Project, ProjectMember, BoardColumn])],
   controllers: [BoardsController],
   providers: [BoardsService, JwtService, AccessAuthGuard, UsersService, ProjectsService, MailService, BoardColumnsService],
-  exports: [BoardsService],
 })
 export class BoardsModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(UploadMiddleware)
       .forRoutes(
-        { path: '/projects/:projectId/:columnId/boards', method: RequestMethod.POST },
+        { path: '/projects/:projectId/boards', method: RequestMethod.POST },
         { path: '/projects/:projectId/boards/:boardId', method: RequestMethod.PATCH },
       );
     consumer.apply(TokenValidMiddleware).forRoutes(BoardsController);

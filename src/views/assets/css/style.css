@@ -261,12 +261,17 @@ input {
   padding: 15px;
 }
 
+.card-header {
+  cursor: pointer;
+}
+
 .card-title {
   padding: 20px 0 15px 0;
   font-size: 18px;
   font-weight: 600;
   color: #012970;
   font-family: 'Nanum Gothic', sans-serif;
+  cursor: pointer;
 }
 
 .card-title span {
@@ -277,6 +282,7 @@ input {
 
 .card-body {
   padding: 0 20px 20px 20px;
+  min-height: 200px;
 }
 
 .card-img-overlay {
