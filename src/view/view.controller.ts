@@ -38,8 +38,7 @@ export class ViewController {
   }
 
   @Get('myProject')
-  @UseGuards(IsLogin)
-  @UseGuards(AuthGuard)
+  @UseGuards(ViewAuthGuard)
   @Render('myProject.ejs')
   async inviteProjectMember(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;

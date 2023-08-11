@@ -23,6 +23,12 @@ export class BoardsService {
     });
   }
 
+  async getBoard(boardId: number): Promise<Board> {
+    const existBoard = await this.boardRepository.findOne({ where: { id: boardId } });
+    if (!existBoard) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+    return existBoard;
+  }
+
   // 보드(카드) 전체조회
   async getBoards(projectId: number): Promise<Board[]> {
     const boards = await this.boardRepository.find({
