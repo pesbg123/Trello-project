@@ -11,7 +11,7 @@ async function getProjects() {
       const result = data.projects;
       result.forEach((array) => {
         const project = `<li>
-                            <a href="/project?projectId=${array.id}"> <i class="bi bi-circle"></i><span>${array.name}</span> </a>
+                            <a href="/projects?projectId=${array.id}"> <i class="bi bi-circle"></i><span>${array.name}</span> </a>
                         </li>`;
         projectList.innerHTML += project;
       });

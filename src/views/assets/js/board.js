@@ -4,7 +4,7 @@ let columnId = params.get('columnId');
 let boardId = params.get('boardId');
 
 $(document).ready(async () => {
-  getColumns();
+  await getColumns();
   getBoards();
 });
 
@@ -48,10 +48,10 @@ async function getColumns() {
       $('#columns-container').sortable({
         handle: '.card-header',
         update: function (event, ui) {
-          const targetBoard = ui.item;
-          const columnId = targetBoard.find('.card-body').attr('data-column-id');
+          const targetColumn = ui.item;
+          const columnId = targetColumn.find('.card-body').attr('data-column-id');
           // 엘리먼트 순서가 0부터시작하므로 +1하여 DB와 동기화
-          const newSequence = targetBoard.index() + 1;
+          const newSequence = targetColumn.index() + 1;
 
           moveColumnSequence(columnId, newSequence);
         },
@@ -79,11 +79,11 @@ async function moveColumnSequence(columnId, newSequence) {
       },
       data: JSON.stringify({ newSequence }),
       success: function (data) {
-        window.location.reload();
+        // window.location.reload();
       },
       error: function (error) {
         console.error('컬럼 순서 변경 에러:', error);
-        window.location.reload();
+        // window.location.reload();
       },
     });
   } catch (error) {
@@ -164,15 +164,15 @@ async function getBoards() {
         // 컬럼아이디가 있는경우 해당배열에 보드를 추가
         columns[columnId].push(board);
       });
-      console.log(columns);
+
       for (const columnId in columns) {
         const column = columns[columnId];
         let columnHtml = '';
 
         column.forEach((board) => {
           columnHtml += `<div class="card mb-3">
-                          <div class="card-body">
-                            <h6 class="card-title">${board.title}</h6>
+                          <div id="boards-container" class="card-body">
+                            <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
                             <p class="card-text">${board.content}</p>
                             <p class="card-deadline">${board.deadlineAt}</p>
                             <div class="d-flex justify-content-between">
@@ -180,15 +180,25 @@ async function getBoards() {
                           </div>
                         </div>`;
         });
-        console.log(typeof parseInt(columnId));
         // 컬럼 아래에 보드 카드 추가
-        const columnElement = document.getElementById(parseInt(columnId));
-        console.log(columnElement);
+        const columnElement = document.querySelector(`[data-column-id="${columnId}"]`);
 
         if (columnElement) {
           columnElement.innerHTML = columnHtml;
         }
       }
+
+      $('#boards-container').sortable({
+        handle: '.card-title',
+        update: function (event, ui) {
+          const targetBoard = ui.item;
+          const boardId = targetBoard.find('.card-title').attr('data-board-id');
+          // 엘리먼트 순서가 0부터시작하므로 +1하여 DB와 동기화
+          const newBoardSequence = targetBoard.index() + 1;
+
+          orderBoardSequence(boardId, newBoardSequence);
+        },
+      });
     },
     error: (error) => {
       console.error(error);
@@ -206,7 +216,71 @@ async function createBoard() {}
 // 보드 삭제
 
 // 보드 동일 컬럼 내 이동
+async function orderBoardSequence(boardId, newBoardSequence) {
+  const projectId = 11; // 임시
+
+  await $.ajax({
+    method: 'PATCH',
+    url: `/projects/${projectId}/boards/${boardId}/order`,
+    headers: {
+      Accept: 'application/json',
+    },
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', accessToken);
+    },
+    data: JSON.stringify({ newBoardSequence }),
+    success: (data) => {},
+    error: (error) => {
+      console.error(error);
+    },
+  });
+}
 
 // 보드 다른 컬럼으로 이동
+async function moveBoard() {
+  const projectId = 11; // 임시
 
+  await $.ajax({
+    method: 'GET',
+    url: `/projects/${projectId}/boards`,
+    headers: {
+      Accept: 'application/json',
+    },
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', accessToken);
+    },
+    success: (data) => {},
+    error: (error) => {
+      console.error(error);
+    },
+  });
+}
 // 파일다운로드 테스트필요
+
+/** GET DATA */
+const createStatus = document.getElementById('createStatus');
+const createMemberList = document.getElementById('createMemberList');
+
+/** DATA */
+const createTitle = document.getElementById('createTitle');
+const createContent = document.getElementById('createContent');
+const createDeadDate = document.getElementById('createDeadDate');
+const createColor = document.getElementById('createColor');
+const createFile = document.getElementById('createFile');
+const createMembers = document.getElementsByName('createMembers');
+const createBoardBtn = document.getElementById('createBoardBtn');
+
+const statusAndMembers = async () => {
+  // const searchParams = new URL(location.href).searchParams;
+  const urlParams = new URL('http://localhost:3000/projects?projectId=15').searchParams;
+  const projectId = urlParams.get('projectId');
+
+  const api = await fetch(`/projects/${projectId}`);
+  const result = await api.json();
+
+  console.log(result);
+};
+
+statusAndMembers();

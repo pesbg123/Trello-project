@@ -1,0 +1,86 @@
+<%- include('includes/header') %>
+  <%- include('includes/sidebar') %>
+
+  <% if (header.isLogin) { %>
+    <main id="main" class="main">
+
+      <!-- Card with titles, buttons, and links -->
+      <div class="card" id="myProjectCard">
+        <div class="card-body" id="projectBody">
+          <h5 class="card-title" id="projectTitle"></h5>
+          <label>Description : </label><p class="card-text" id="projectDesc"></p>
+          <label>Member : </label><p class="card-text" id="projectMember"></p>
+          <label>Background Color : </label><p></p><input type="text" id="projectColor" readonly /><p></p>
+        </div>
+      </div><!-- End Card with titles, buttons, and links -->
+
+      <!-- Vertically centered Modal -->
+      <div class="modal fade" id="inviteMember" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">멤버 초대하기</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>초대할 멤버의 이메일을 입력해 주세요.</p>
+              <label style="margin-right: 20px;">Email : </label><input id="userMail" type="email" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="sendMail">초대하기</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Vertically centered Modal-->
+
+      <!-- Vertically centered Modal -->
+      <div class="modal fade" id="updateProject" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">프로젝트 수정하기</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <label style="margin-right: 20px;">프로젝트 이름 : </label><input style="width: 300px;" id="projectName" type="text" /> <br />
+              <div style=" margin-top: 20px; margin-bottom: 15px; display:inline-flex">
+              <label style="margin-right: 20px; ">프로젝트 설명 : </label><textarea style="height: 80px; width: 300px;" id="projectDescription" type="textarea"></textarea> <br />
+              </div>
+              <label style="margin-right: 10px;">배경 색상 : </label><input id="backgroundColor1" type="color" /> <br />
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="updateBtn">수정하기</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Vertically centered Modal-->
+      <% } %>
+    </main><!-- End #main -->
+
+    <%- include('includes/footer') %>
+
+      <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+          class="bi bi-arrow-up-short"></i></a>
+
+      <!-- Vendor JS Files -->
+      <script src="/assets/vendor/apexcharts/apexcharts.min.js"></script>
+      <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+      <script src="/assets/vendor/chart.js/chart.umd.js"></script>
+      <script src="/assets/vendor/echarts/echarts.min.js"></script>
+      <script src="/assets/vendor/quill/quill.min.js"></script>
+      <script src="/assets/vendor/simple-datatables/simple-datatables.js"></script>
+      <script src="/assets/vendor/tinymce/tinymce.min.js"></script>
+      <script src="/assets/vendor/php-email-form/validate.js"></script>
+
+      <!-- Template Main JS File -->
+      <script src="/assets/js/main.js"></script>
+
+        <!-- Project JS File -->
+      <script src="/assets/js/myProject.js" type="module"></script>
+      </body>
+
+    </html>

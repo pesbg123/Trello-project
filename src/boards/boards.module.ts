@@ -14,6 +14,7 @@ import { ProjectsService } from 'src/projects/projects.service';
 import { MailService } from 'src/mail/mail.service';
 import { BoardColumnsService } from 'src/board-columns/board-columns.service';
 import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
+import { TokenValidMiddleware } from 'src/_common/middlewares/token.valid.middleware';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Board, User, Project, ProjectMember, BoardColumn])],
@@ -28,5 +29,6 @@ export class BoardsModule {
         { path: '/projects/:projectId/:columnId/boards', method: RequestMethod.POST },
         { path: '/projects/:projectId/boards/:boardId', method: RequestMethod.PATCH },
       );
+    consumer.apply(TokenValidMiddleware).forRoutes(BoardsController);
   }
 }

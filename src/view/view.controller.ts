@@ -37,6 +37,16 @@ export class ViewController {
     return { title: 'IDLE', subtitle: '프로젝트 등록', header };
   }
 
+  @Get('myProject')
+  @UseGuards(ViewAuthGuard)
+  @Render('myProject.ejs')
+  async inviteProjectMember(@Req() req: IRequest) {
+    const user: IAccessPayload = req.user;
+    const header = await this.viewService.header(user);
+
+    return { title: 'IDLE', subtitle: '프로젝트 멤버 초대', header };
+  }
+
   /** No headers */
   @Get('login')
   @Render('login.ejs')

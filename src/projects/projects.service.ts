@@ -50,7 +50,7 @@ export class ProjectsService {
   }
 
   async getProject(projectId: number, userId: number): Promise<Object> {
-    const existProject = await this.projectRepository.findOne({ where: { id: projectId } });
+    const existProject = await this.projectRepository.findOne({ where: { id: projectId }, select: { boardColumns: true, projectMembers: true } });
     if (!existProject) throw new HttpException('해당 프로젝트를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
     const existAuthorization = await this.projectMemberRepository.findOne({
