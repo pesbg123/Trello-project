@@ -4,13 +4,27 @@ import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.gu
 import { CreateBoardDto, orderBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { IRequest } from 'src/_common/interfaces/request.interface';
-import { CheckCreatorInterceptor } from 'src/_common/utils/checkCreatorInterceptor';
 import { Response } from 'express';
+import { CheckPermissionInterceptor } from 'src/_common/interceptors/checkPermissionInterceptor';
 
 @Controller('projects/:projectId')
-@UseInterceptors(CheckCreatorInterceptor)
+// @UseInterceptors(CheckPermissionInterceptor)
 export class BoardsController {
   constructor(private readonly boardService: BoardsService) {}
+
+  // 보드(카드) 전체조회
+  @Get('boards')
+  @UseGuards(AccessAuthGuard)
+  async getBoards(@Param('projectId') projectId: number) {
+    return await this.boardService.getBoards(projectId);
+  }
+
+  // 보드(카드) 디테일
+  @Get('boards/:boardId')
+  @UseGuards(AccessAuthGuard)
+  async getBoardDetail(@Param('projectId') projectId: number, @Param('boardId') boardId: number) {
+    return await this.boardService.getBoardDetail(projectId, boardId);
+  }
 
   // 보드(카드) 생성
   @Post(':columnId/boards')
