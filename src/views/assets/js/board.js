@@ -6,6 +6,7 @@ let boardId = params.get('boardId');
 $(document).ready(async () => {
   await getColumns();
   getBoards();
+  $('#post-details-modal').modal('show');
 });
 
 const refreshToken = document.cookie.split('=')[1];
@@ -175,7 +176,7 @@ async function getBoards() {
           columnHtml += `<div class="card mb-3">
                           <div id="boards-container" class="card-body">
                             <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
-                            <p class="card-text">${board.content}</p>
+                            <p class="card-text" id="click-board">${board.content}</p>
                             <p class="card-deadline">${board.deadlineAt}</p>
                             <div class="d-flex justify-content-between">
                            </div>
@@ -356,3 +357,12 @@ createBoardBtn.addEventListener('click', async () => {
 });
 
 statusAndMembers();
+
+// board details modal open
+// 모든 컬럼에 대한 이벤트 위임 설정
+document.addEventListener('click', function (event) {
+  if (event.target.id === 'click-board') {
+    console.log('Modal button clicked');
+    $('#post-details-modal').modal('show');
+  }
+});

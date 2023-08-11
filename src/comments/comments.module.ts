@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { JwtService } from 'src/jwt/jwt.service';
 import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
 import { UsersService } from 'src/users/users.service';
 import { User } from 'src/_common/entities/user.entity';
+import { TokenValidMiddleware } from 'src/_common/middlewares/token.valid.middleware';
 import { ProjectsService } from 'src/projects/projects.service';
 import { BoardsService } from 'src/boards/boards.service';
 import { Project } from 'src/_common/entities/project.entity';
@@ -20,4 +21,8 @@ import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
   controllers: [CommentsController],
   providers: [CommentsService, JwtService, AccessAuthGuard, UsersService, ProjectsService, BoardsService, MailService],
 })
-export class CommentsModule {}
+export class CommentsModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(TokenValidMiddleware).forRoutes(CommentsController);
+  }
+}
