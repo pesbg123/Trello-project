@@ -21,10 +21,20 @@
         <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
         </ul>
       </li>
-        
+
       <li class="nav-item">
-        <a class="nav-link" href="/project-register">
-          <i class="bi bi-grid"></i>
+        <a class="nav-link collapsed" data-bs-target="#myproject-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person"></i><span>My Projects</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="myproject-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <div id="myProjects">
+          </div>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/project-register">
+          <i class="bi bi-card-list"></i>
           <span>Project register</span>
         </a>
       </li>

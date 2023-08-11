@@ -28,8 +28,17 @@ export class ProjectsController {
   @UseGuards(AccessAuthGuard)
   async getProject(@Param('projectId') projectId: number, @Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
-    const project = await this.projectsService.getProject(projectId, id);
-    return res.status(HttpStatus.OK).json({ project });
+    const { project, members } = await this.projectsService.getProject(projectId, id);
+    return res.status(HttpStatus.OK).json({ project, members });
+  }
+
+  @Get('/getProjects/myProject')
+  @UseGuards(AccessAuthGuard)
+  async getMyProject(@Req() req: IRequest, @Res() res: Response): Promise<Object> {
+    const { id } = req.user;
+    console.log(id);
+    const myProject = await this.projectsService.getMyProject(id);
+    return res.status(HttpStatus.OK).json({ myProject });
   }
 
   @Patch(':projectId')
@@ -44,6 +53,8 @@ export class ProjectsController {
   ): Promise<Object> {
     const { id } = req.user;
     if (!name && !desc && !backgroundColor) throw new HttpException('수정하려는 정보를 입력해 주세요.', HttpStatus.BAD_REQUEST);
+    if (name && (name.length < 2 || name.length > 20)) throw new HttpException('프로젝트명은 2~20자 사이 입니다. ', HttpStatus.BAD_REQUEST);
+    if (desc && desc.length < 10) throw new HttpException('프로젝트 설명은 최소 10자 이상입니다. ', HttpStatus.BAD_REQUEST);
     const projectDAO = { name, desc, background_color: backgroundColor };
 
     await this.projectsService.updateProject(projectId, id, projectDAO);
@@ -80,6 +91,5 @@ export class ProjectsController {
     await this.projectsService.participateProjectMember(projectId, email);
 
     return res.redirect('/');
-    // return res.status(HttpStatus.OK).json({ message: '프로젝트에 정상적으로 참여했습니다.' });
   }
 }

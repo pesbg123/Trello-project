@@ -49,7 +49,7 @@ export class ProjectsService {
     return projects;
   }
 
-  async getProject(projectId: number, userId: number): Promise<Object> {
+  async getProject(projectId: number, userId: number): Promise<any> {
     const existProject = await this.projectRepository.findOne({ where: { id: projectId } });
     if (!existProject) throw new HttpException('해당 프로젝트를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
 
@@ -59,7 +59,20 @@ export class ProjectsService {
     if (!existAuthorization) throw new HttpException('해당 프로젝트의 조회 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
 
     const project = await this.projectRepository.findOne({ where: { id: projectId } });
-    return project;
+
+    const projectMembers = await this.projectMemberRepository
+      .createQueryBuilder('member')
+      .innerJoinAndSelect('member.user', 'user')
+      .select(['user.email'])
+      .where('member.project_id = :projectId and participation = true', { projectId })
+      .getRawMany();
+
+    return { project, members: projectMembers };
+  }
+
+  async getMyProject(userId: number): Promise<Object> {
+    const myProject = await this.projectRepository.find({ where: { user: { id: userId } } });
+    return myProject;
   }
 
   async updateProject(projectId: number, userId: number, projectDAO: any): Promise<void> {
@@ -68,6 +81,9 @@ export class ProjectsService {
 
     const existAuthorization = await this.projectRepository.findOne({ where: { id: projectId, user: { id: userId } } });
     if (!existAuthorization) throw new HttpException('해당 프로젝트의 수정 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
+
+    projectDAO.name = projectDAO.name || existProject.name;
+    projectDAO.desc = projectDAO.desc || existProject.desc;
 
     await this.projectRepository.update(
       { id: projectId },
@@ -106,7 +122,6 @@ export class ProjectsService {
     if (!existAuthorization) throw new HttpException('해당 프로젝트의 멤버 초대 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
 
     const id = await this.userService.findUser(email);
-    if (!id) throw new HttpException('존재하지 않는 유저입니다.', HttpStatus.NOT_FOUND);
 
     const existMember = await this.projectMemberRepository.findOne({ where: { user: { id }, project: { id: projectId } } });
     if (existMember) throw new HttpException('이미 초대된 유저입니다. ', HttpStatus.BAD_REQUEST);

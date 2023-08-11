@@ -82,8 +82,9 @@ export class UsersService {
   }
 
   async findUser(email: string): Promise<any> {
-    const { id } = await this.userRepository.findOne({ where: { email } });
-    return id;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user) throw new HttpException('존재하지 않는 유저입니다.', HttpStatus.NOT_FOUND);
+    return user.id;
   }
   /** 토큰 재발급 */
   async refreshToken(refreshToken: string): Promise<IAccessToken> {
