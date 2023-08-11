@@ -230,6 +230,29 @@ h6 {
   box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
 }
 
+#myProjectCard {
+  width: 50%;
+}
+
+#myProjectCard h5 {
+  font-size: 30px;
+}
+
+#myProjectCard p,
+input {
+  font-size: 18px;
+}
+
+#myProjectCard label {
+  font-size: 22px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+#projectName h5 {
+  font-size: 30px;
+}
+
 .card-header,
 .card-footer {
   border-color: #ebeef4;
