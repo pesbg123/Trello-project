@@ -19,6 +19,7 @@ import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
   imports: [TypeOrmModule.forFeature([Board, User, Project, ProjectMember, BoardColumn])],
   controllers: [BoardsController],
   providers: [BoardsService, JwtService, AccessAuthGuard, UsersService, ProjectsService, MailService, BoardColumnsService],
+  exports: [BoardsService],
 })
 export class BoardsModule {
   configure(consumer: MiddlewareConsumer) {
