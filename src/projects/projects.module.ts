@@ -14,5 +14,6 @@ import { MailService } from 'src/mail/mail.service';
   imports: [TypeOrmModule.forFeature([Project, ProjectMember, User])],
   controllers: [ProjectsController],
   providers: [ProjectsService, JwtService, AccessAuthGuard, UsersService, MailService],
+  exports: [ProjectsService],
 })
 export class ProjectsModule {}
