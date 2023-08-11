@@ -8,7 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Response } from 'express';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class ViewAuthGuard implements CanActivate {
   constructor(private jwtService: JwtService, @Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request: IRequest = context.switchToHttp().getRequest();
@@ -17,12 +17,7 @@ export class AuthGuard implements CanActivate {
   }
 
   async validate(request: IRequest, response: Response): Promise<any> {
-    const requestAccessToken = request.cookies.accessToken;
-
-    if (!requestAccessToken) return response.redirect('/login');
-    const accessVerifyErrorHandle = this.jwtService.verifyErrorHandle(requestAccessToken, process.env.ACCESS_SECRET_KEY);
-    if (accessVerifyErrorHandle !== 'jwt normal') return response.redirect('/login');
-
+    if (!request.user) return response.redirect('/login');
     return true;
   }
 }

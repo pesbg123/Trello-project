@@ -9,7 +9,6 @@ import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.gu
 import { User } from 'src/_common/entities/user.entity';
 import { EditProfileDto } from 'src/_common/dtos/editProfile.dto';
 import { EditPasswordDto } from 'src/_common/dtos/editPassword.dto';
-import { RefreshAuthGuard } from 'src/_common/middlewares/security/refresh.auth.guard';
 import { IAccessToken } from 'src/_common/interfaces/accessToken.interface';
 import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
 import { RemoveUserDto } from 'src/_common/dtos/removeUser.dto';
@@ -79,14 +78,6 @@ export class UsersController {
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
     return res.json(result);
-  }
-
-  @Post('refreshtoken')
-  @UseGuards(RefreshAuthGuard)
-  async refreshToken(@Req() req: IRequest): Promise<IAccessToken> {
-    const { refreshToken } = req.cookies;
-    const { accessToken } = await this.usersService.refreshToken(refreshToken);
-    return { accessToken };
   }
 
   @Get('search')
