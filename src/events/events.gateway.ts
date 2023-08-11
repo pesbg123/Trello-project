@@ -96,7 +96,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(@ConnectedSocket() client: Socket): Promise<any> {
     const authorization = client.request.headers.cookie;
     if (!authorization) return;
-    const token = authorization.split('=')[1];
+    const token = authorization.split('=')[2];
 
     const decode = this.jwtService.verify(token, process.env.REFRESH_SECRET_KEY);
     this.connectedClients[client.id] = Number(decode.id);

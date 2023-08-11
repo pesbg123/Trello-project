@@ -20,12 +20,12 @@
             <div class="card">
               <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
 
-                <img src="<%= header.imageUrl %>" alt="Profile" class="rounded-circle mb-3">
-                <h2>
-                  <%= header.name %>
+                <img class="rounded-circle mb-3" id="mainImage">
+                <h2 id="mainName">
+
                 </h2>
-                <h3>
-                  <%= header.email %>
+                <h3 id="mainEmail">
+
                 </h3>
               </div>
             </div>
@@ -66,12 +66,12 @@
 
                     <div class="row">
                       <div class="col-lg-3 col-md-4 label ">이메일</div>
-                      <div class="col-lg-9 col-md-8">Kevin Anderson</div>
+                      <div class="col-lg-9 col-md-8" id="infoEmail"></div>
                     </div>
 
                     <div class="row">
                       <div class="col-lg-3 col-md-4 label">이름</div>
-                      <div class="col-lg-9 col-md-8">Lueilwitz, Wisoky and Leuschke</div>
+                      <div class="col-lg-9 col-md-8" id="infoName"></div>
                     </div>
 
                   </div>
@@ -79,106 +79,81 @@
                   <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
 
                     <!-- Profile Edit Form -->
-                    <form>
+                    <div>
                       <div class="row mb-3">
                         <label for="profileImage" class="col-md-4 col-lg-3 col-form-label">프로필 사진</label>
                         <div class="col-md-8 col-lg-9">
-                          <img src="assets/img/profile-img.jpg" alt="Profile">
+                          <img id="editImage">
                           <div class="pt-2">
-                            <a href="#" class="btn btn-primary btn-sm" title="Upload new profile image"><i
-                                class="bi bi-upload"></i></a>
-                            <a href="#" class="btn btn-danger btn-sm" title="Remove my profile image"><i
-                                class="bi bi-trash"></i></a>
+                            <input type="file" class="btn  btn-sm" id="editProfileImage"></a>
                           </div>
                         </div>
                       </div>
 
                       <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">이름</label>
+                        <label for="editName" class="col-md-4 col-lg-3 col-form-label">이름</label>
                         <div class="col-md-8 col-lg-9">
-                          <input name="fullName" type="text" class="form-control" id="fullName" value="Kevin Anderson">
+                          <input name="editName" type="text" class="form-control" id="editName" value="Kevin Anderson">
                         </div>
                       </div>
 
                       <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button class="btn btn-primary" id="editBtn">수정</button>
                       </div>
-                    </form><!-- End Profile Edit Form -->
+                    </div><!-- End Profile Edit Form -->
 
                   </div>
 
                   <div class="tab-pane fade pt-3" id="profile-settings">
 
                     <!-- Settings Form -->
-                    <form>
+                    <div>
 
                       <div class="row mb-3">
-                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">Email Notifications</label>
+                        <label for="fullName" class="col-md-4 col-lg-3 col-form-label">패스워드</label>
                         <div class="col-md-8 col-lg-9">
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="changesMade" checked>
-                            <label class="form-check-label" for="changesMade">
-                              Changes made to your account
-                            </label>
-                          </div>
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="newProducts" checked>
-                            <label class="form-check-label" for="newProducts">
-                              Information on new products and services
-                            </label>
-                          </div>
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="proOffers">
-                            <label class="form-check-label" for="proOffers">
-                              Marketing and promo offers
-                            </label>
-                          </div>
-                          <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="securityNotify" checked disabled>
-                            <label class="form-check-label" for="securityNotify">
-                              Security alerts
-                            </label>
+                          <div class="col-md-8 col-lg-9">
+                            <input type="password" class="form-control" id="removePassword">
                           </div>
                         </div>
                       </div>
 
                       <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button class="btn btn-primary" id="removeUserBtn">회원 탈퇴</button>
                       </div>
-                    </form><!-- End settings Form -->
+                    </div><!-- End settings Form -->
 
                   </div>
 
                   <div class="tab-pane fade pt-3" id="profile-change-password">
                     <!-- Change Password Form -->
-                    <form>
+                    <div>
 
                       <div class="row mb-3">
-                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Current Password</label>
+                        <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">현재 패스워드</label>
                         <div class="col-md-8 col-lg-9">
-                          <input name="password" type="password" class="form-control" id="currentPassword">
+                          <input name="password" type="password" class="form-control" id="editCurrentPassword">
                         </div>
                       </div>
 
                       <div class="row mb-3">
-                        <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">New Password</label>
+                        <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">신규 패스워드</label>
                         <div class="col-md-8 col-lg-9">
-                          <input name="newpassword" type="password" class="form-control" id="newPassword">
+                          <input name="newpassword" type="password" class="form-control" id="editNewPassword">
                         </div>
                       </div>
 
                       <div class="row mb-3">
-                        <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Re-enter New
-                          Password</label>
+                        <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">신규 확인 패스워드</label>
                         <div class="col-md-8 col-lg-9">
-                          <input name="renewpassword" type="password" class="form-control" id="renewPassword">
+                          <input name="renewpassword" type="password" class="form-control" id="editNewConfirmPassword">
                         </div>
                       </div>
 
                       <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Change Password</button>
+                        <button class="btn btn-primary" id="passowrdEditBtn">패스워드 변경</button>
                       </div>
-                    </form><!-- End Change Password Form -->
+                    </div><!-- End Change Password Form -->
 
                   </div>
 
@@ -208,7 +183,8 @@
       <script src="/assets/vendor/tinymce/tinymce.min.js"></script>
       <script src="/assets/vendor/php-email-form/validate.js"></script>
 
-
+      <!-- Project JS Files -->
+      <script type="module" src="/assets/js/profile.js"></script>
       </body>
 
       </html>

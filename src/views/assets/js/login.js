@@ -16,11 +16,9 @@ loginBtn.addEventListener('click', async () => {
     body: JSON.stringify(new loginData()),
   });
 
-  const { status } = await api;
   const result = await api.json();
 
-  if (status === 201) {
-    localStorage.setItem('accessToken', result.accessToken);
+  if (result.result) {
     window.location.href = '/';
   } else {
     alert(result.message);

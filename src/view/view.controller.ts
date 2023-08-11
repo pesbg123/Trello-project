@@ -2,9 +2,8 @@ import { Controller, Get, Query, Render, Req, UseGuards } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { Request } from 'express';
 import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
-import { IsLogin } from 'src/_common/security/isLogin.guard';
 import { IRequest } from 'src/_common/interfaces/request.interface';
-import { AuthGuard } from 'src/_common/security/view.auth.guard';
+import { ViewAuthGuard } from 'src/_common/middlewares/security/view.auth.guard';
 
 @Controller()
 export class ViewController {
@@ -12,7 +11,6 @@ export class ViewController {
 
   /** headers */
   @Get()
-  @UseGuards(IsLogin)
   @Render('index.ejs')
   async index(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
@@ -21,8 +19,7 @@ export class ViewController {
   }
 
   @Get('myprofile')
-  @UseGuards(IsLogin)
-  @UseGuards(AuthGuard)
+  @UseGuards(ViewAuthGuard)
   @Render('myprofile.ejs')
   async myProfile(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
@@ -31,8 +28,7 @@ export class ViewController {
   }
 
   @Get('project-register')
-  @UseGuards(IsLogin)
-  @UseGuards(AuthGuard)
+  @UseGuards(ViewAuthGuard)
   @Render('project-register.ejs')
   async projectRegister(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;

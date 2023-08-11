@@ -15,6 +15,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { JwtService } from 'src/jwt/jwt.service';
 import { IAccessToken } from 'src/_common/interfaces/accessToken.interface';
+import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
+import { RemoveUserDto } from 'src/_common/dtos/removeUser.dto';
 
 @Injectable()
 export class UsersService {
@@ -25,11 +27,11 @@ export class UsersService {
   ) {}
 
   /** 회원가입 */
-  async signup(body: SignupDto): Promise<IResult> {
+  async signup(body: SignupDto, imageUrl: string): Promise<IResult> {
     const emailExists = await this.userRepository.findOne({ where: { email: body.email } });
     if (emailExists) throw new HttpException('이미 존재하는 이메일입니다.', HttpStatus.BAD_REQUEST);
     await transfomrPassword(body);
-    await this.userRepository.save(body);
+    await this.userRepository.save({ ...body, imageUrl });
     return { result: true };
   }
 
@@ -46,14 +48,12 @@ export class UsersService {
       process.env.JWT_ACCESS_EXPIRATION_TIME,
     );
     const refreshToken = this.jwtService.sign({ id: findByUser.id }, process.env.REFRESH_SECRET_KEY, process.env.JWT_REFRESH_EXPIRATION_TIME);
-    await this.cacheManager.set(refreshToken, { accessToken, id: findByUser.id }, Number(process.env.REFRESH_CACHE_TIME));
 
     return { accessToken, refreshToken };
   }
 
   /** 로그아웃 */
-  async logout(refreshToken: string): Promise<IResult> {
-    await this.cacheManager.del(refreshToken);
+  logout(): IResult {
     return { result: true };
   }
 
@@ -63,21 +63,55 @@ export class UsersService {
   }
 
   /** 사용자 정보 조회 */
-  async profile(id: number): Promise<User> {
-    return await this.userRepository.findOne({ where: { id }, select: { email: true, name: true, createdAt: true } });
+  async profile(user: IAccessPayload): Promise<IAccessPayload> {
+    // const result = await this.userRepository.findOne({ where: { id } });
+    return user.imageUrl
+      ? { id: user.id, name: user.name, email: user.email, imageUrl: user.imageUrl }
+      : {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          imageUrl: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
+        };
   }
 
-  /** 사용자 정보 수정 */
-  async editProfile(id: number, editData: EditProfileDto): Promise<IResult> {
-    await this.userRepository.update({ id }, editData);
+  /** 회원 탈퇴 */
+  async removeUser(id: number, password: RemoveUserDto): Promise<IResult> {
+    const findByUser = await this.userRepository.findOne({ where: { id } });
+    const validPassword = await validatePassword(findByUser.password, password.password);
+    if (!validPassword) throw new HttpException('패스워드가 일치하지 않습니다.', 403);
+
+    await this.userRepository.delete({ id });
+
     return { result: true };
   }
 
+  /** 사용자 정보 수정 */
+  async editProfile(id: number, editData: EditProfileDto, imageUrl: string): Promise<IAccessToken> {
+    await this.userRepository.update({ id }, { ...editData, imageUrl });
+    const findByUser = await this.userRepository.findOne({ where: { id } });
+    const accessToken = this.jwtService.sign(
+      { id: findByUser.id, name: findByUser.name, email: findByUser.email, imageUrl: findByUser.imageUrl },
+      process.env.ACCESS_SECRET_KEY,
+      process.env.JWT_ACCESS_EXPIRATION_TIME,
+    );
+
+    return { accessToken };
+  }
+
   /** 사용자 패스워드 수정 */
-  async editPassword(user: User, editPassword: EditPasswordDto): Promise<IResult> {
-    if (user.password == editPassword.password) throw new BadRequestException('현재 사용중인 패스워드입니다.');
+  async editPassword(id: number, editPassword: EditPasswordDto): Promise<IResult> {
+    const findByUser = await this.userRepository.findOne({ where: { id } });
+
+    const validPassword = await validatePassword(findByUser.password, editPassword.oldPassword);
+    if (!validPassword) throw new HttpException('현재 패스워드가 일치하지 않습니다.', 403);
+
+    const validNewPassword = await validatePassword(findByUser.password, editPassword.newPassword);
+    if (validNewPassword) throw new HttpException('신규 패스워드와 현재 패스워드가 동일합니다.', 403);
+
     await transfomrPassword(editPassword);
-    await this.userRepository.update({ id: user.id }, { password: editPassword.password });
+
+    await this.userRepository.update({ id }, { password: editPassword.newPassword });
     return { result: true };
   }
 
