@@ -1,4 +1,4 @@
-import { Controller, Get, Render, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Render, Req, UseGuards } from '@nestjs/common';
 import { ViewService } from './view.service';
 import { Request } from 'express';
 import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
@@ -35,6 +35,17 @@ export class ViewController {
     const header = await this.viewService.header(user);
 
     return { title: 'IDLE', subtitle: '프로젝트 등록', header };
+  }
+
+  @Get('myProject')
+  @UseGuards(IsLogin)
+  @UseGuards(AuthGuard)
+  @Render('myProject.ejs')
+  async inviteProjectMember(@Req() req: IRequest) {
+    const user: IAccessPayload = req.user;
+    const header = await this.viewService.header(user);
+
+    return { title: 'IDLE', subtitle: '프로젝트 멤버 초대', header };
   }
 
   /** No headers */
