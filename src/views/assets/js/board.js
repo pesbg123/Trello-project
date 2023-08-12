@@ -372,7 +372,7 @@ async function boardDetail(element) {
                                     <span class="dots"></span>
                                     <small id="edit-comment" data-comment-id=${item.id}>수정</small>
                                     <span class="dots"></span>
-                                    <small id="" data-comment-id=${item.id}>삭제</small>
+                                    <small id="del-comment" class="click-del-comment" data-comment-id=${item.id}>삭제</small>
                                   </div>
                                   <div class="icons align-items-center">
                                     <i class="fa fa-check-circle-o check-icon text-primary"></i>
@@ -388,8 +388,8 @@ async function boardDetail(element) {
       clickEditComment.forEach((item) => {
         item.addEventListener('click', () => {
           $('#comment-edit-modal').modal('show');
-          const editCommentBtn = document.getElementById('comment-edit-btn');
           // 댓글 수정 버튼 이벤트
+          const editCommentBtn = document.getElementById('comment-edit-btn');
           editCommentBtn.addEventListener('click', () => {
             const commentInput = document.getElementById('comment-edit-input').value;
             editComment(item.dataset.commentId, boardId, projectId, commentInput);
@@ -397,6 +397,36 @@ async function boardDetail(element) {
         });
       });
 
+      // 댓글 삭제 버튼 이벤트
+      const delCommentBtn = document.querySelectorAll('#del-comment');
+      delCommentBtn.forEach((item) => {
+        item.addEventListener('click', () => {
+          delComment(item.dataset.commentId);
+        });
+      });
+
+      // 댓글 삭제 함수
+      async function delComment(commentId) {
+        try {
+          const result = await $.ajax({
+            url: `/projects/${projectId}/boards/${boardId}/comments/${commentId}`,
+            method: 'DELETE',
+            dataType: 'json', // 응답 데이터를 JSON 형식으로 처리하기 위해 변경
+            headers: {
+              Accept: 'application/json',
+            },
+          });
+          if (result.message) {
+            alert(result.message);
+            location.reload();
+          }
+        } catch (error) {
+          console.log(error);
+          alert('본인이 작성한 댓글이 아니거나, 댓글이 존재하지 않습니다.');
+        }
+      }
+
+      // 댓글 수정 함수
       async function editComment(commentId, boardId, projectId, content) {
         if (!content) {
           alert('수정할 댓글을 입력해주세요');
@@ -421,6 +451,7 @@ async function boardDetail(element) {
         } catch (error) {
           console.log(error);
           alert('본인이 작성한 댓글이 아니거나, 댓글이 존재하지 않습니다.');
+          location.reload();
         }
       }
       $('#post-details-modal').modal('show');
