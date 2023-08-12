@@ -346,10 +346,9 @@ async function boardDetail(element) {
                                       </div>`;
       data.comments.forEach((item) => {
         const daysAgoStr = getDaysAgoFromNow(item.createdAt);
-        let username = '';
-        // arrData.
-        // console.log(datauser);
-        let tempHtml = ` <div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
+        // let username = '';
+
+        let tempHtml = `<div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
                             <div class="col-md-10">
                               <!-- 댓글 하나  -->
                               <div class="card p-3 mt-2">
@@ -358,7 +357,7 @@ async function boardDetail(element) {
                                     <img src=""
                                       width="40" class="user-img rounded-circle mr-2">
                                     <span class="comment-name">
-                                    <p class="font-weight-bold text-primary"style="margin-left: 1rem; font-size: 1rem;">${username}</p>
+                                    <p class="font-weight-bold text-primary"style="margin-left: 1rem; font-size: 1rem;">username</p>
                                     </span>
                                   </div>
                                   <small>${daysAgoStr}</small>
@@ -369,11 +368,11 @@ async function boardDetail(element) {
 
                                 <div class="action d-flex justify-content-between mt-2 align-items-center">
                                   <div class="reply px-4">
-                                    <small data-comment-id=${item.id}>답글</small>
+                                    <small id="" data-comment-id=${item.id}>답글</small>
                                     <span class="dots"></span>
-                                    <small data-comment-id=${item.id}>수정</small>
+                                    <small id="edit-comment" data-comment-id=${item.id}>수정</small>
                                     <span class="dots"></span>
-                                    <small data-comment-id=${item.id}>삭제</small>
+                                    <small id="" data-comment-id=${item.id}>삭제</small>
                                   </div>
                                   <div class="icons align-items-center">
                                     <i class="fa fa-check-circle-o check-icon text-primary"></i>
@@ -384,6 +383,46 @@ async function boardDetail(element) {
                           </div>`;
         $('.comments-container').append(tempHtml);
       });
+
+      const clickEditComment = document.querySelectorAll('#edit-comment');
+      clickEditComment.forEach((item) => {
+        item.addEventListener('click', () => {
+          $('#comment-edit-modal').modal('show');
+          const editCommentBtn = document.getElementById('comment-edit-btn');
+          // 댓글 수정 버튼 이벤트
+          editCommentBtn.addEventListener('click', () => {
+            const commentInput = document.getElementById('comment-edit-input').value;
+            editComment(item.dataset.commentId, boardId, projectId, commentInput);
+          });
+        });
+      });
+
+      async function editComment(commentId, boardId, projectId, content) {
+        if (!content) {
+          alert('수정할 댓글을 입력해주세요');
+        }
+        try {
+          const req = {
+            content,
+          };
+          const result = await $.ajax({
+            url: `/projects/${projectId}/boards/${boardId}/comments/${commentId}`,
+            method: 'PUT',
+            dataType: 'json', // 응답 데이터를 JSON 형식으로 처리하기 위해 변경
+            headers: {
+              Accept: 'application/json',
+            },
+            data: req,
+          });
+          if (result.message) {
+            alert(result.message);
+            location.reload();
+          }
+        } catch (error) {
+          console.log(error);
+          alert('본인이 작성한 댓글이 아니거나, 댓글이 존재하지 않습니다.');
+        }
+      }
       $('#post-details-modal').modal('show');
     },
     error: (error) => {

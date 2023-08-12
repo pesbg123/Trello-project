@@ -71,6 +71,7 @@ export class CommentsService {
 
   // 댓글 수정
   async updateComment(id: number, projectId: number, boardId: number, commentId: number, content: string): Promise<string> {
+    console.log(id, projectId, boardId, commentId, content);
     // 해당 프로젝트에 보드가 존재하는지 검증
     const existBoard = await this.boardsService.getBoard(boardId);
     if (!existBoard) {
@@ -83,8 +84,9 @@ export class CommentsService {
     }
     // 해당 코멘트가 존재하는지 (본인이 작성한건지 검증)
     const existComment = await this.commentRepository.findOne({ where: { id: commentId, user: { id } } });
+    console.log(existComment);
     if (!existComment) {
-      throw new HttpException('해당 댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      throw new HttpException('본인이 작성한 댓글이 아닙니다.', HttpStatus.FORBIDDEN);
     }
     // 코멘트 수정
     const result = await this.commentRepository.update({ id: commentId }, { content });
