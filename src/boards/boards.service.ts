@@ -45,7 +45,7 @@ export class BoardsService {
     const boardDetail = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } }, relations: ['user', 'comments'] });
 
     if (!boardDetail) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-    console.log(boardDetail);
+    // console.log(boardDetail);
     return boardDetail;
   }
 

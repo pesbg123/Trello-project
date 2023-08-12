@@ -2,13 +2,15 @@ const params = new URLSearchParams(window.location.search);
 let projectId = params.get('projectId');
 let columnId = params.get('columnId');
 let boardId = params.get('boardId');
+const commentContainer = document.querySelector('#count-comments-container');
 
 $(document).ready(async () => {
   await getColumns();
   getBoards();
-  $('#post-details-modal').modal('hide');
 });
 
+// 댓글 수
+let countComments = 0;
 const refreshToken = document.cookie.split('=')[1];
 const accessToken = localStorage.getItem('accessToken');
 const printColumns = document.querySelector('#columns-container');
@@ -175,7 +177,7 @@ async function getBoards() {
           columnHtml += `<div class="card mb-3">
                           <div id="boards-container" class="card-body">
                             <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
-                            <p class="card-text" id=${board.id} onclick="boardDetail(this)"> ${board.content}</p>
+                            <p class="card-text" id=${board.id} onclick="boardDetail(this)" style="cursor: pointer;"> ${board.content}</p>
                             <p class="card-deadline">${board.deadlineAt}</p>
                             <div class="d-flex justify-content-between">
                            </div>
@@ -228,6 +230,32 @@ async function getBoards() {
   });
 }
 
+function getDaysAgoFromNow(dateString) {
+  const givenDate = new Date(dateString);
+  const currentDate = new Date(); // 현재 시간
+  const oneDay = 24 * 60 * 60 * 1000; // 하루의 밀리초
+
+  // 날짜만 비교하도록 설정
+  givenDate.setHours(0, 0, 0, 0);
+  currentDate.setHours(0, 0, 0, 0);
+
+  // 날짜를 비교하여 날짜 차이 계산
+  const timeDifference = currentDate - givenDate;
+  const daysAgo = Math.floor(timeDifference / oneDay);
+
+  if (daysAgo === 0) {
+    return '오늘';
+  } else if (daysAgo === 1) {
+    return '어제';
+  } else if (daysAgo > 1 && daysAgo < 7) {
+    return `${daysAgo}일 전`;
+  } else {
+    // 7일 이상 차이나면 날짜 형식으로 반환
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return givenDate.toLocaleDateString('ko-KR', options);
+  }
+}
+
 // 보드디테일 조회 추가
 async function boardDetail(element) {
   const boardId = element.getAttribute('id');
@@ -235,6 +263,7 @@ async function boardDetail(element) {
 
   const projectId = 11; // 임시
 
+  modal.querySelector('.comments-container').innerHTML = '';
   await $.ajax({
     method: 'GET',
     url: `projects/${projectId}/boards/${boardId}`,
@@ -247,7 +276,6 @@ async function boardDetail(element) {
     },
     success: (data) => {
       let profileImg = '';
-      console.log(data);
       data.user.imageUrl
         ? (profileImg = data.user.imageUrl)
         : (profileImg = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
@@ -257,11 +285,105 @@ async function boardDetail(element) {
       data.file ? (Img = data.file) : (Img = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       modal.querySelector('.modal-title').textContent = data.title;
-      modal.querySelector('.profile-img').innerHTML = profileImg;
+      modal.querySelector('.profile-img').innerHTML = ` <img src="${profileImg}">`;
       modal.querySelector('.profile-name').textContent = data.user.name;
       modal.querySelector('.board-img').innerHTML = Img;
       modal.querySelector('.content').textContent = data.content;
+      modal.querySelector('.input-group').innerHTML = `<div>
+      <input id="comment-input" type="text" class="form-control" placeholder="댓글을 입력해주세요.">
+      <button id="comment-create-btn" data-id="${boardId}"  class="btn btn-primary">작성</button>
+    </div>`;
 
+      const cbtn = document.getElementById('comment-create-btn');
+
+      // 댓글 작성 버튼 온클릭
+      cbtn.addEventListener('click', () => {
+        const commentInput = document.querySelector('#comment-input').value;
+        if (!commentInput) {
+          alert('댓글을 입력해주세요.');
+          return;
+        }
+        createComment(cbtn, commentInput);
+      });
+
+      // 댓글 저장 함수
+      async function createComment(element, content, reply) {
+        const boardId = element.getAttribute('data-id'); // boardId 추출
+        let replyId = '';
+        if (reply) {
+          replyId = reply;
+        } else {
+          replyId = null;
+        }
+        const req = {
+          replyId,
+          content,
+        };
+        // 제이쿼리 AJAX POST메서드를 사용해서 POST요청
+        await $.post(
+          `/projects/${projectId}/boards/${boardId}/comments`,
+          req, // 서버가 필요한 정보를 같이 보냄.
+          (data, status) => {
+            console.log(data, status);
+            if (status === 'success') {
+              alert(data.message);
+              location.reload();
+              $('#post-details-modal').modal('show');
+            } else {
+              alert('댓글 저장 실패');
+            }
+          },
+        );
+      }
+
+      const arrData = [data];
+      arrData.forEach((item) => {
+        countComments = item.comments.length;
+      });
+
+      commentContainer.innerHTML = `<div>
+                                      <h5 class="count-comments">댓글 수 (${countComments})</h5>
+                                      </div>`;
+      data.comments.forEach((item) => {
+        const daysAgoStr = getDaysAgoFromNow(item.createdAt);
+        let username = '';
+        // arrData.
+        // console.log(datauser);
+        let tempHtml = ` <div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
+                            <div class="col-md-10">
+                              <!-- 댓글 하나  -->
+                              <div class="card p-3 mt-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                  <div class="user d-flex flex-row align-items-center">
+                                    <img src=""
+                                      width="40" class="user-img rounded-circle mr-2">
+                                    <span class="comment-name">
+                                    <p class="font-weight-bold text-primary"style="margin-left: 1rem; font-size: 1rem;">${username}</p>
+                                    </span>
+                                  </div>
+                                  <small>${daysAgoStr}</small>
+                                </div>
+                                <div class="comment-txt">
+                                  <p>${item.content}</p>
+                                </div>
+
+                                <div class="action d-flex justify-content-between mt-2 align-items-center">
+                                  <div class="reply px-4">
+                                    <small data-comment-id=${item.id}>답글</small>
+                                    <span class="dots"></span>
+                                    <small data-comment-id=${item.id}>수정</small>
+                                    <span class="dots"></span>
+                                    <small data-comment-id=${item.id}>삭제</small>
+                                  </div>
+                                  <div class="icons align-items-center">
+                                    <i class="fa fa-check-circle-o check-icon text-primary"></i>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>`;
+        $('.comments-container').append(tempHtml);
+      });
       $('#post-details-modal').modal('show');
     },
     error: (error) => {
@@ -401,12 +523,3 @@ createBoardBtn.addEventListener('click', async () => {
 });
 
 statusAndMembers();
-
-// board details modal open
-// 모든 컬럼에 대한 이벤트 위임 설정
-document.addEventListener('click', function (event) {
-  if (event.target.id === 'click-board') {
-    console.log('Modal button clicked');
-    $('#post-details-modal').modal('show');
-  }
-});

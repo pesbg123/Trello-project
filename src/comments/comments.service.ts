@@ -15,7 +15,8 @@ export class CommentsService {
   ) {}
 
   // 댓글 생성
-  async createComment(content: string, id: number, projectId: number, boardId: number, replyId: string): Promise<string> {
+  async createComment(content: string, id: number, projectId: number, boardId: number, replyId: number): Promise<string> {
+    console.log(content, id, typeof projectId, typeof boardId, typeof replyId);
     // 데이터 유효성 검증
     if (!content) {
       throw new BadRequestException('댓글을 입력해주세요.');
@@ -31,7 +32,7 @@ export class CommentsService {
       return;
     }
     // 댓글 저장
-    if (replyId === null) {
+    if (!replyId) {
       const newComment = this.commentRepository.create({
         content,
         user: { id },
@@ -39,7 +40,7 @@ export class CommentsService {
       });
       await this.commentRepository.save(newComment);
       return '댓글 작성에 성공했습니다.';
-    } else if (typeof replyId === 'number') {
+    } else if (replyId) {
       const newReply = this.commentRepository.create({
         replyId,
         content,
@@ -48,8 +49,6 @@ export class CommentsService {
       });
       await this.commentRepository.save(newReply);
       return '대댓글 작성에 성공했습니다.';
-    } else if (typeof replyId === 'string') {
-      throw new BadRequestException('replyId의 데이터 형식이 올바르지 않습니다.');
     } else {
       throw new HttpException('댓글 수정중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
     }
