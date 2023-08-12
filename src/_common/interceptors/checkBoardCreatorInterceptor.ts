@@ -15,7 +15,6 @@ export class CheckBoardCreatorInterceptor implements NestInterceptor {
 
     const isCreator = await this.boardService.checkBoardCreator(projectId, boardId, id);
     req.isCreator = isCreator;
-    console.log(isCreator);
     return next.handle().pipe(tap((data: IResult) => ({ data })));
   }
 }

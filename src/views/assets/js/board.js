@@ -15,8 +15,7 @@ const printColumns = document.querySelector('#columns-container');
 
 // 컬럼 조회
 async function getColumns() {
-  const projectId = 11; // 임시
-
+  const projectId = 18;
   await $.ajax({
     method: 'GET',
     url: `/projects/${projectId}/columns`,
@@ -40,7 +39,7 @@ async function getColumns() {
                           <button type="button" id="add-board-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scrollingModal">
                           보드 추가
                         </button>
-                        <button type="button" class="btn btn-secondary" onclick="deleteColumn(this)" id=${column.id}>보드 삭제</button>
+                        <button type="button" class="btn btn-secondary" onclick="deleteColumn(this)" id=${column.id}>컬럼 삭제</button>
                       </div>
                     </div>
                   </div>`;
@@ -69,7 +68,7 @@ async function getColumns() {
 // 컬럼 이동
 async function moveColumnSequence(columnId, newSequence) {
   try {
-    const projectId = 11; // 프로젝트 ID
+    const projectId = 18; // 프로젝트 ID
 
     await $.ajax({
       method: 'PATCH',
@@ -87,7 +86,7 @@ async function moveColumnSequence(columnId, newSequence) {
       },
       error: function (error) {
         console.error('컬럼 순서 변경 에러:', error);
-        // window.location.reload();
+        window.location.reload();
       },
     });
   } catch (error) {
@@ -102,7 +101,7 @@ async function moveColumnSequence(columnId, newSequence) {
 // 컬럼 생성
 async function createColumn() {
   const columnName = document.querySelector('#columnName-input').value;
-  const projectId = 11;
+  const projectId = 18;
   try {
     await $.ajax({
       method: 'POST',
@@ -154,7 +153,7 @@ async function updateColumn() {
   const columnName = document.querySelector('#update-columnName-input').value;
   const updateButton = document.querySelector('#update-column-modal .btn-primary');
   const columnId = updateButton.getAttribute('id');
-  const projectId = 11; // 임시
+  const projectId = 18; // 임시
 
   try {
     await $.ajax({
@@ -191,10 +190,10 @@ async function updateColumn() {
   }
 }
 
-// 컬럼 삭제 추가
+// 컬럼 삭제
 async function deleteColumn(element) {
   const columnId = element.getAttribute('id');
-  const projectId = 11;
+  const projectId = 18;
 
   try {
     await $.ajax({
@@ -229,7 +228,7 @@ async function deleteColumn(element) {
 
 // 보드 조회
 async function getBoards() {
-  const projectId = 11; // 임시
+  const projectId = 18; // 임시
 
   await $.ajax({
     method: 'GET',
@@ -262,11 +261,11 @@ async function getBoards() {
         let columnHtml = '';
 
         column.forEach((board) => {
-          columnHtml += `<div class="card mb-3">
+          columnHtml += `<div class="card mb-3" style="border:1px solid ${board.color}; background-color: ${board.color}10;">
                           <div id="boards-container" class="card-body">
                             <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
                             <p class="card-text" id=${board.id} onclick="boardDetail(this)"> ${board.content}</p>
-                            <p class="card-deadline">${board.deadlineAt}</p>
+                            <p class="card-deadline">${'마감일:' + board.deadlineAt.substring(0, 10).replace('-', '.').replace('-', '.')}</p>
                             <div class="d-flex justify-content-between">
                            </div>
                           </div>
@@ -323,7 +322,7 @@ async function boardDetail(element) {
   const boardId = element.getAttribute('id');
   const modal = document.querySelector('#post-details-modal');
 
-  const projectId = 11; // 임시
+  const projectId = 18; // 임시
 
   await $.ajax({
     method: 'GET',
@@ -337,12 +336,13 @@ async function boardDetail(element) {
     },
     success: (data) => {
       let profileImg = '';
-      console.log(data.id);
-      data.user.imageUrl ? (profileImg = data.user.imageUrl) : (profileImg = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
+      data.user.imageUrl
+        ? (profileImg = `<img src= "${data.user.imageUrl}"/>`)
+        : (profileImg = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       let Img = '';
 
-      data.file ? (Img = data.file) : (Img = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
+      data.file ? (Img = `<img src= "${data.file}"/>`) : (Img = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       modal.querySelector('.modal-title').textContent = data.title;
       modal.querySelector('.profile-img').innerHTML = profileImg;
@@ -351,7 +351,7 @@ async function boardDetail(element) {
       modal.querySelector('.content').textContent = data.content;
       modal.querySelector('.button-container').innerHTML = `
       <button type="button" class="btn btn-primary" onclick="openEditBoardModal(this)" id=${data.id}>수정</button>
-      <button type="button" class="btn btn-secondary">삭제</button>
+      <button type="button" class="btn btn-secondary" onclick="deleteBoard(this)" id=${data.id}>삭제</button>
       `;
       modal.querySelector('.comment-container').innerHTML = `
       <input type="text" id="comment-input" placeholder="댓글을 입력하세요" />
@@ -365,23 +365,153 @@ async function boardDetail(element) {
 }
 
 // 보드 수정 모달
-function openEditBoardModal(data) {}
+async function openEditBoardModal(element) {
+  const boardId = element.getAttribute('id');
+  const projectId = 18; // 임시
+
+  const editModal = document.querySelector('#scrollingEditModal');
+  const memberList = editModal.querySelector('#editMemberList');
+  const titleInput = editModal.querySelector('#editTitle');
+  const contentInput = editModal.querySelector('#editContent');
+  const colorInput = editModal.querySelector('#editColor');
+  const deadDateInput = editModal.querySelector('#editDeadDate');
+
+  const api = await fetch(`/projects/${projectId}`);
+  const result = await api.json();
+
+  result.project.projectMembers.forEach((info) => {
+    memberList.innerHTML += `<div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="createMembers" value="${info.id}" id="user${info.id}">
+                      <label class="form-check-label" for="user${info.id}"> ${info.user.name}</label>
+                    </div>`;
+  });
+
+  await $.ajax({
+    method: 'GET',
+    url: `/projects/${projectId}/boards/${boardId}`,
+    headers: {
+      Accept: 'application/json',
+    },
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', accessToken);
+    },
+    success: (data) => {
+      titleInput.value = data.title;
+      contentInput.value = data.content;
+      colorInput.value = data.color;
+      deadDateInput.value = data.deadlineAt;
+
+      $('#scrollingEditModal').modal('show');
+
+      // 업데이트버튼에 id값을 넣고 editBoard에 넘겨줌
+      const editButton = document.querySelector('#editBoardBtn');
+      editButton.setAttribute('id', boardId);
+    },
+    error: (error) => {
+      console.error(error);
+    },
+  });
+}
 
 // 보드 수정
 async function editBoard(button) {
-  const projectId = 11;
+  const projectId = 18;
   const boardId = button.getAttribute('id');
-  const formData = new FormData();
+  const editTitle = document.getElementById('editTitle');
+  const editContent = document.getElementById('editContent');
+  const editDeadDate = document.getElementById('editDeadDate');
+  const editColor = document.getElementById('editColor');
+  const editFile = document.getElementById('editFile');
 
-  await $.ajax({
-    method: 'PATCH',
+  let formData = new FormData();
+
+  const editMembers = document.getElementsByName('createMembers');
+  let memberList = [];
+  editMembers.forEach((x) => {
+    if (x.checked) {
+      memberList.push(x.value);
+    }
   });
+
+  formData.append('newFile', editFile.files[0]);
+  formData.append('title', editTitle.value);
+  formData.append('content', editContent.value);
+  formData.append('collaborators', memberList);
+  formData.append('color', editColor.value);
+  formData.append('deadlineAt', editDeadDate.value);
+
+  try {
+    await $.ajax({
+      method: 'PATCH',
+      url: `/projects/${projectId}/boards/${boardId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: '보드 수정완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
 }
+
 // 보드 삭제
+async function deleteBoard(element) {
+  const projectId = 18;
+  const boardId = element.getAttribute('id');
+
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `/projects/${projectId}/boards/${boardId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: '보드 삭제완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
 
 // 보드 동일 컬럼 내 이동
 async function orderBoardSequence(boardId, newBoardSequence) {
-  const projectId = 11; // 임시
+  const projectId = 18; // 임시
 
   await $.ajax({
     method: 'PATCH',
@@ -403,7 +533,7 @@ async function orderBoardSequence(boardId, newBoardSequence) {
 
 // 보드 다른 컬럼으로 이동
 async function moveBoard(boardId, columnId) {
-  const projectId = 11; // 임시
+  const projectId = 18; // 임시
 
   await $.ajax({
     method: 'PATCH',
@@ -422,8 +552,6 @@ async function moveBoard(boardId, columnId) {
   });
 }
 
-// 파일다운로드 테스트필요
-
 /** GET DATA */
 const createStatus = document.getElementById('createStatus');
 const createMemberList = document.getElementById('createMemberList');
@@ -439,7 +567,7 @@ const createBoardBtn = document.getElementById('createBoardBtn');
 
 const statusAndMembers = async () => {
   // const searchParams = new URL(location.href).searchParams;
-  const urlParams = new URL('http://localhost:3000/projects?projectId=15').searchParams;
+  const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
   const projectId = urlParams.get('projectId');
 
   const api = await fetch(`/projects/${projectId}`);
@@ -459,7 +587,7 @@ const statusAndMembers = async () => {
 
 createBoardBtn.addEventListener('click', async () => {
   // const searchParams = new URL(location.href).searchParams;
-  const urlParams = new URL('http://localhost:3000/projects?projectId=15').searchParams;
+  const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
   const projectId = urlParams.get('projectId');
 
   let memberList = [];
@@ -483,7 +611,7 @@ createBoardBtn.addEventListener('click', async () => {
   formData.append('collaborators', memberList);
   formData.append('color', createColor.value);
   formData.append('deadlineAt', createDeadDate.value);
-  formData.append('newFile', createFile.file);
+  formData.append('newFile', createFile.files[0]);
 
   const api = await fetch(`/projects/${projectId}/boards`, {
     method: 'POST',
@@ -493,8 +621,13 @@ createBoardBtn.addEventListener('click', async () => {
   const result = await api.json();
 
   if (result.result) {
-    alert('보드가 생성되었습니다.');
-    window.location.hr;
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: '보드 생성완료!',
+    }).then(() => {
+      window.location.reload();
+    });
   }
 });
 

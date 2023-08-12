@@ -65,6 +65,7 @@ export class BoardsController {
   async moveBoard(@Param('projectId') projectId: number, @Param('boardId') boardId: number, @Param('columnId') columnId: number): Promise<IResult> {
     return await this.boardService.moveBoard(projectId, boardId, columnId);
   }
+
   // 보드(카드) 삭제
   @Delete('boards/:boardId')
   @UseGuards(AccessAuthGuard)
