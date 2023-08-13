@@ -78,6 +78,17 @@ export class ProjectsService {
     return myProject;
   }
 
+  async getJoinProject(userId: number): Promise<Object> {
+    const joinProject = await this.projectMemberRepository
+      .createQueryBuilder('member')
+      .innerJoinAndSelect('member.project', 'project')
+      .select(['project.id', 'project.name'])
+      .where('member.user_id = :userId and participation = true', { userId })
+      .getRawMany();
+
+    return joinProject;
+  }
+
   async updateProject(projectId: number, userId: number, projectDAO: any): Promise<void> {
     const existProject = await this.projectRepository.findOne({ where: { id: projectId } });
     if (!existProject) throw new HttpException('해당 프로젝트를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
@@ -117,10 +128,10 @@ export class ProjectsService {
     }
   }
 
-  async inviteProjectMember(projectId: number, userId: number, email: string, name: string): Promise<void> {
+  async inviteProjectMember(projectId: number, userId: number, email: string, name: string): Promise<any> {
     const existProject = await this.projectRepository.findOne({ where: { id: projectId } });
     if (!existProject) throw new HttpException('해당 프로젝트를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
-    console.log(existProject.name);
+
     const existAuthorization = await this.projectRepository.findOne({ where: { id: projectId, user: { id: userId } } });
     if (!existAuthorization) throw new HttpException('해당 프로젝트의 멤버 초대 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
 
@@ -142,6 +153,8 @@ export class ProjectsService {
     } finally {
       queryRunner.release();
     }
+
+    return { id, name: existProject.name };
   }
 
   async participateProjectMember(projectId: number, email: any): Promise<void> {
