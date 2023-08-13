@@ -7,7 +7,6 @@ import { CheckProjectCreatorInterceptor } from 'src/_common/interceptors/checkPr
 
 @Controller('projects/:projectId/columns')
 @UseGuards(AccessAuthGuard)
-@UseInterceptors(CheckProjectCreatorInterceptor)
 export class BoardColumnsController {
   constructor(private readonly boardColumnService: BoardColumnsService) {}
 
@@ -19,24 +18,28 @@ export class BoardColumnsController {
 
   // 보드컬럼 생성
   @Post()
+  @UseInterceptors(CheckProjectCreatorInterceptor)
   async createColumn(@Body() body: CreateColumnDto, @Param('projectId') projectId: number): Promise<IResult> {
     return await this.boardColumnService.createColumn(body, projectId);
   }
 
   // 보드컬럼 순서변경
   @Patch(':columnId/order')
+  @UseInterceptors(CheckProjectCreatorInterceptor)
   async orderColumn(@Body() body: orderColumnDto, @Param('projectId') projectId: number, @Param('columnId') columnId: number): Promise<IResult> {
     return await this.boardColumnService.orderColumn(body, projectId, columnId);
   }
 
   // 보드컬럼명 수정
   @Patch(':columnId')
+  @UseInterceptors(CheckProjectCreatorInterceptor)
   async updateColumn(@Body() body: updateColumnDto, @Param('projectId') projectId: number, @Param('columnId') columnId: number): Promise<IResult> {
     return await this.boardColumnService.updateColumn(body, projectId, columnId);
   }
 
   // 보드컬럼 삭제
   @Delete(':columnId')
+  @UseInterceptors(CheckProjectCreatorInterceptor)
   async deleteColumn(@Param('projectId') projectId: number, @Param('columnId') columnId: number): Promise<IResult> {
     return await this.boardColumnService.deleteColumn(projectId, columnId);
   }

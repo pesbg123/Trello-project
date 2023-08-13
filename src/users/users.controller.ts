@@ -9,7 +9,6 @@ import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.gu
 import { User } from 'src/_common/entities/user.entity';
 import { EditProfileDto } from 'src/_common/dtos/editProfile.dto';
 import { EditPasswordDto } from 'src/_common/dtos/editPassword.dto';
-import { IAccessToken } from 'src/_common/interfaces/accessToken.interface';
 import { IAccessPayload } from 'src/_common/interfaces/access.payload.interface';
 import { RemoveUserDto } from 'src/_common/dtos/removeUser.dto';
 
