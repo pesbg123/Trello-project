@@ -15,7 +15,7 @@ export class ViewController {
   async index(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'IDLE', subtitle: '대시보드', header };
+    return { title: 'IDLE', subtitle: '메인페이지', header };
   }
 
   @Get('myprofile')
@@ -54,6 +54,16 @@ export class ViewController {
     const user: IAccessPayload = req.user;
     const header = await this.viewService.header(user);
     return { title: 'IDLE', subtitle: '보드', header };
+  }
+
+  @Get('chatRoom')
+  @UseGuards(ViewAuthGuard)
+  @Render('chat-room.ejs')
+  async chatRoom(@Req() req: IRequest) {
+    const user: IAccessPayload = req.user;
+    const header = await this.viewService.header(user);
+
+    return { title: 'IDLE', subtitle: '프로젝트 채팅 방', header };
   }
 
   /** No headers */
