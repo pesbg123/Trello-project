@@ -66,12 +66,11 @@ export class CommentsService {
     if (!existProject) {
       return;
     }
-    return await this.commentRepository.find({ where: { board: { id: boardId } }, order: { createdAt: 'DESC' } });
+    return await this.commentRepository.find({ where: { board: { id: boardId } }, relations: ['user'], order: { createdAt: 'DESC' } });
   }
 
   // 댓글 수정
   async updateComment(id: number, projectId: number, boardId: number, commentId: number, content: string): Promise<string> {
-    console.log(id, projectId, boardId, commentId, content);
     // 해당 프로젝트에 보드가 존재하는지 검증
     const existBoard = await this.boardsService.getBoard(boardId);
     if (!existBoard) {

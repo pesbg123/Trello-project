@@ -256,12 +256,25 @@ function getDaysAgoFromNow(dateString) {
   }
 }
 
+async function getCommentsUser(projectId, boardId) {
+  // 제이쿼리 AJAX POST메서드를 사용해서 POST요청
+  return await $.get(`/projects/${projectId}/boards/${boardId}/comments`, (data, status) => {
+    if (status === 'success') {
+      return;
+    } else {
+      alert('댓글 조회 실패');
+    }
+  });
+}
+
 // 보드디테일 조회 추가
 async function boardDetail(element) {
   const boardId = element.getAttribute('id');
   const modal = document.querySelector('#post-details-modal');
 
   const projectId = 11; // 임시
+
+  const userItem = await getCommentsUser(projectId, boardId);
 
   modal.querySelector('.comments-container').innerHTML = '';
   await $.ajax({
@@ -344,44 +357,55 @@ async function boardDetail(element) {
       commentContainer.innerHTML = `<div>
                                       <h5 class="count-comments">댓글 수 (${countComments})</h5>
                                       </div>`;
-      data.comments.forEach((item) => {
+
+      userItem.forEach((item) => {
+        username = item.user.name;
+        userImg = item.user.imageUrl;
         const daysAgoStr = getDaysAgoFromNow(item.createdAt);
-        // let username = '';
 
-        let tempHtml = `<div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
-                            <div class="col-md-10">
-                              <!-- 댓글 하나  -->
-                              <div class="card p-3 mt-2">
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <div class="user d-flex flex-row align-items-center">
-                                    <img src=""
-                                      width="40" class="user-img rounded-circle mr-2">
-                                    <span class="comment-name">
-                                    <p class="font-weight-bold text-primary"style="margin-left: 1rem; font-size: 1rem;">username</p>
-                                    </span>
-                                  </div>
-                                  <small>${daysAgoStr}</small>
-                                </div>
-                                <div class="comment-txt">
-                                  <p>${item.content}</p>
-                                </div>
+        // 댓글(답글 제외)
+        if (!item.replyId) {
+          let tempHtml = `<div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
+          <div class="col-md-10">
+            <!-- 댓글 하나  -->
+            <div class="card p-3 mt-2" id="comment-1" data-commentId="${item.id}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="user d-flex flex-row align-items-center">
+                  <img src="${userImg}"
+                    width="40" class="user-img rounded-circle mr-2">
+                  <span class="comment-name">
+                  <p class="font-weight-bold text-primary"style="margin-left: 1rem; font-size: 1rem;">${username}</p>
+                  </span>
+                </div>
+                <small>${daysAgoStr}</small>
+              </div>
+              <div class="comment-txt">
+                <p>${item.content}</p>
+              </div>
 
-                                <div class="action d-flex justify-content-between mt-2 align-items-center">
-                                  <div class="reply px-4">
-                                    <small id="" data-comment-id=${item.id}>답글</small>
-                                    <span class="dots"></span>
-                                    <small id="edit-comment" data-comment-id=${item.id}>수정</small>
-                                    <span class="dots"></span>
-                                    <small id="del-comment" class="click-del-comment" data-comment-id=${item.id}>삭제</small>
-                                  </div>
-                                  <div class="icons align-items-center">
-                                    <i class="fa fa-check-circle-o check-icon text-primary"></i>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>`;
-        $('.comments-container').append(tempHtml);
+              <div class="action d-flex justify-content-between mt-2 align-items-center">
+                <div class="reply px-4">
+                  <small id="" data-comment-id=${item.id}>답글</small>
+                  <span class="dots"></span>
+                  <small id="edit-comment" data-comment-id=${item.id}>수정</small>
+                  <span class="dots"></span>
+                  <small id="del-comment" class="click-del-comment" data-comment-id=${item.id}>삭제</small>
+                </div>
+                <div class="icons align-items-center">
+                  <i class="fa fa-check-circle-o check-icon text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+          $('.comments-container').append(tempHtml);
+        } else {
+          // 답글 조회 어떻게 해야될지 생각 안나서 보류 .
+          const replyComment = document.querySelectorAll('#comment-1');
+          replyComment.forEach((item) => {
+            // console.log(item.dataset.commentid);
+          });
+        }
       });
 
       const clickEditComment = document.querySelectorAll('#edit-comment');
