@@ -429,6 +429,7 @@ async function boardDetail(element) {
                 title: 'Success!',
                 text: data.message,
               }).then(() => {
+                window.location.reload();
                 $('#post-details-modal').modal('show');
               });
             } else {
