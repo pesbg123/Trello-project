@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await getProjects();
+  await getChattingRooms();
   await getMyProjects();
 });
 const projectList = document.getElementById('allProjects');
+const projectChattingRoomList = document.getElementById('projectChattingRooms');
 const myProjectList = document.getElementById('myProjects');
 
 async function getProjects() {
@@ -24,15 +26,29 @@ async function getProjects() {
   });
 }
 
+async function getChattingRooms() {
+  await $.ajax({
+    method: 'GET',
+    url: '/projects/getProjects/joinProject',
+    success: (data) => {
+      const result = data.joinProject;
+      result.forEach((array) => {
+        const chattingRoom = `<li>
+                                <a href="/chatRoom?projectId=${array.project_id}"> <i class="bi bi-circle"></i><span>${array.project_name}</span> </a>
+                              </li>`;
+        projectChattingRoomList.innerHTML += chattingRoom;
+      });
+    },
+    error: (error) => {
+      console.log(error);
+    },
+  });
+}
+
 async function getMyProjects() {
-  const accessToken = localStorage.getItem('accessToken');
   await $.ajax({
     method: 'GET',
     url: '/projects/getProjects/myProject',
-    beforeSend: function (xhr) {
-      xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', accessToken);
-    },
     success: (data) => {
       const result = data.myProject;
       result.forEach((array) => {

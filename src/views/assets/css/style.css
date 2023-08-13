@@ -109,6 +109,11 @@ h6 {
 /*--------------------------------------------------------------
 # Override some default Bootstrap stylings
 --------------------------------------------------------------*/
+#recent-message-container > .dropdown-menu {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
 /* Dropdown menus */
 .dropdown-menu {
   border-radius: 4px;
@@ -228,6 +233,78 @@ h6 {
   border: none;
   border-radius: 5px;
   box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+
+.chatRoom {
+  width: 50%;
+  margin: 10% auto auto 20%;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 0px 0 30px rgba(1, 41, 112, 0.1);
+}
+
+.chatRoom-title {
+  padding: 20px 0 15px 0;
+  font-size: 35px;
+  font-weight: bold;
+  color: #012970;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+
+.chatRoom-title span {
+  color: #899bbd;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.chatRoom-body {
+  padding: 0 20px 20px 20px;
+}
+
+.chat-container {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  height: 300px;
+  overflow-y: auto;
+  background-color: #f9f9f9;
+}
+
+.chat-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-input {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.chat-input input[type='text'] {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.chat-input button {
+  padding: 8px 16px;
+  background-color: #5173e0;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  margin-left: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.chat-input button:hover {
+  background-color: rgb(50, 68, 231);
 }
 
 #myProjectCard {
@@ -820,8 +897,13 @@ input {
   color: #4154f1;
 }
 
-.dashboard .filter .dropdown-header {
+.dashboard .filter {
   padding: 8px 15px;
+}
+
+.dropdown-header {
+  padding: 8px 15px;
+  width: 350px;
 }
 
 .dashboard .filter .dropdown-header h6 {

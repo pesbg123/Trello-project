@@ -5,7 +5,6 @@ const registerBtn = document.getElementById('registerBtn');
 
 function projectRegister(event) {
   event.preventDefault();
-  const accessToken = localStorage.getItem('accessToken');
   const payload = {
     name: projectName.value,
     desc: projectDesc.value,
@@ -20,7 +19,6 @@ function projectRegister(event) {
     },
     beforeSend: function (xhr) {
       xhr.setRequestHeader('Content-type', 'application/json');
-      xhr.setRequestHeader('authorization', accessToken);
     },
     data: JSON.stringify(payload),
     success: (data) => {

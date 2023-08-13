@@ -21,7 +21,6 @@ $(document).ready(async () => {
           xhr.setRequestHeader('authorization', accessToken);
         },
         success: (data) => {
-          console.log(data);
           Swal.fire({
             icon: 'success',
             title: 'Success!',
@@ -95,6 +94,7 @@ async function getProjectInfo() {
 async function inviteUser() {
   const email = document.getElementById('userMail').value;
   const payload = { email };
+  let header = {};
   await $.ajax({
     method: 'POST',
     url: `/projects/${projectId}/invitation`,
@@ -107,7 +107,10 @@ async function inviteUser() {
     },
     data: JSON.stringify(payload),
     success: (data) => {
-      console.log(data);
+      const { userId, projectName, name } = data;
+      header.userId = userId;
+      header.userName = name;
+      header.projectName = projectName;
       Swal.fire({
         icon: 'success',
         title: 'Success!',
@@ -124,6 +127,8 @@ async function inviteUser() {
       });
     },
   });
+
+  socket.emit('inviteUser', header);
 }
 
 function updateProject() {

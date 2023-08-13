@@ -29,16 +29,23 @@ export class ProjectsController {
   async getProject(@Param('projectId') projectId: number, @Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
     const { project, members } = await this.projectsService.getProject(projectId, id);
-    return res.status(HttpStatus.OK).json({ project, members });
+    return res.status(HttpStatus.OK).json({ project, members, name: req.user.name });
   }
 
   @Get('/getProjects/myProject')
   @UseGuards(AccessAuthGuard)
   async getMyProject(@Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
-    console.log(id);
     const myProject = await this.projectsService.getMyProject(id);
     return res.status(HttpStatus.OK).json({ myProject });
+  }
+
+  @Get('/getProjects/joinProject')
+  @UseGuards(AccessAuthGuard)
+  async joinProject(@Req() req: IRequest, @Res() res: Response): Promise<Object> {
+    const { id } = req.user;
+    const joinProject = await this.projectsService.getJoinProject(id);
+    return res.status(HttpStatus.OK).json({ joinProject, userName: req.user.name });
   }
 
   @Patch(':projectId')
@@ -81,8 +88,8 @@ export class ProjectsController {
     const { id, name } = req.user;
     const email = emailDTO.email;
 
-    await this.projectsService.inviteProjectMember(projectId, id, email, name);
-    return res.status(HttpStatus.OK).json({ message: '멤버를 초대했습니다.' });
+    const result = await this.projectsService.inviteProjectMember(projectId, id, email, name);
+    return res.status(HttpStatus.OK).json({ message: '멤버를 초대했습니다.', userId: result.id, projectName: result.name, name });
   }
 
   @Post(':projectId/participation')

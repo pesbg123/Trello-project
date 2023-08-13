@@ -35,6 +35,7 @@ removeUserBtn.addEventListener('click', async () => {
   const result = await api.json();
 
   if (result.result) {
+    window.localStorage.clear();
     alert('회원 탈퇴가 완료되었습니다.');
     return (window.location.href = '/');
   }
