@@ -112,16 +112,35 @@
     height: 100%;
   }
 
-  .comment-container {
-    width: 80%;
-    /* margin-top: 5rem; */
+  .comment-txt {
+    margin: auto;
+    width: 90%;
   }
 
-  .comment-list {
-    margin-top: 5rem;
-    height: 400px;
-    width: 100%;
-    background-color: #98999c;
+  .dots {
+    height: 4px;
+    width: 4px;
+    margin-bottom: 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .icons i {
+    margin-left: 8px;
+  }
+
+  .reply {
+    margin-left: 12px;
+  }
+
+  .reply small {
+    color: rgb(18, 103, 156);
+  }
+
+  .reply small:hover {
+    cursor: pointer;
+    color: rgb(0, 49, 245);
   }
 </style>
 <main id="main" class="main">
@@ -306,12 +325,54 @@
               <div class="input-group">
                 <div class="comment-container">
                   <input type="text" id="comment-input" placeholder="댓글을 입력하세요" />
-                  <button type="button" id="comment-create-btn" data-bs-dismiss="modal">작성</button>
+                  <button type="button" id="comment-create-btn" data-bs-dismiss="modal" onclick="createComment(this)">작성</button>
                 </div>
               </div>
+
               <!-- 댓글 목록 -->
-              <div class="comment-container">
-                <div class="comment-list">comment</div>
+              <div class="container mt-5">
+                <div class="row d-flex justify-content-center" style="margin-top: 0.8rem">
+                  <div class="col-md-10">
+                    <div id="count-comments-container" class="headings d-flex justify-content-between align-items-center mb-3">
+                      <h5 class="count-comments">댓글 수 (0)</h5>
+                    </div>
+                    <!-- 댓글   -->
+                    <div class="comments-container">
+                      <div class="row d-flex justify-content-center" style="margin-top: 0.8rem">
+                        <div class="col-md-10">
+                          <!-- 댓글 하나  -->
+                          <div class="card p-3 mt-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                              <div class="user d-flex flex-row align-items-center">
+                                <img src="" width="40" class="user-img rounded-circle mr-2" />
+                                <span>
+                                  <p id="comment-name" class="font-weight-bold text-primary" style="margin-left: 1rem; font-size: 1rem">${.user}</p>
+                                </span>
+                              </div>
+                              <small>${}</small>
+                            </div>
+                            <div class="comment-txt">
+                              <p>${}</p>
+                            </div>
+
+                            <div class="action d-flex justify-content-between mt-2 align-items-center">
+                              <div class="reply px-4">
+                                <small data-comment-id="${data.id}">답글</small>
+                                <span class="dots"></span>
+                                <small data-comment-id="${data.id}">수정</small>
+                                <span class="dots"></span>
+                                <small data-comment-id="${data.id}">삭제</small>
+                              </div>
+                              <div class="icons align-items-center">
+                                <i class="fa fa-check-circle-o check-icon text-primary"></i>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -380,6 +441,46 @@
       </div>
     </div>
     <!-- End Scrolling Modal-->
+    <!-- comment-edit-modal -->
+    <div class="modal fade" id="comment-edit-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" style="min-width: 530px; max-width: 40%">
+        <div class="modal-content">
+          <div class="modal-body-container">
+            <div class="modal-body" style="display: flex; flex-direction: column; align-items: center">
+              <!-- 댓글 작성 인풋 박스 및 버튼 -->
+              <div class="input-group">
+                <div class="comment-container">
+                  <input id="comment-edit-input" type="text" id="comment-input" placeholder="댓글을 입력하세요" />
+                  <button type="button" id="comment-edit-btn">수정</button>
+                </div>
+              </div>
+
+              <!-- 댓글 목록 -->
+              <div class="container mt-5">
+                <div class="card p-3 mt-2">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="user d-flex flex-row align-items-center">
+                      <img src="" width="40" class="user-img rounded-circle mr-2" />
+                      <span class="comment-name">
+                        <p class="font-weight-bold text-primary" style="margin-left: 1rem; font-size: 1rem">${username}</p>
+                      </span>
+                    </div>
+                    <small>${daysAgoStr}</small>
+                  </div>
+                  <div class="comment-txt">
+                    <p>${item.content}</p>
+                  </div>
+                  <div class="modal-footer">
+                    <!-- 수정, 삭제 버튼 등 필요한 버튼을 추가 -->
+                    <button type="button" style="background-color: gray" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </main>
 <!-- End #main -->

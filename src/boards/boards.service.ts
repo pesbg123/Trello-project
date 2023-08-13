@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable, StreamableFile } from '@nestjs/c
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBoardDto, orderBoardDto, UpdateBoardDto } from 'src/_common/dtos/board.dto';
 import { Board } from 'src/_common/entities/board.entity';
+import { User } from 'src/_common/entities/user.entity';
+import { ProjectMember } from 'src/_common/entities/projectMember.entity';
 import { BoardColumn } from 'src/_common/entities/boardColumn.entity';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { EntityManager, Repository } from 'typeorm';
@@ -13,6 +15,8 @@ export class BoardsService {
   constructor(
     @InjectRepository(Board)
     private boardRepository: Repository<Board>,
+    @InjectRepository(ProjectMember)
+    private projectMemberRepository: Repository<ProjectMember>,
     @InjectRepository(BoardColumn)
     private readonly boardColumnRepository: Repository<BoardColumn>,
   ) {
@@ -30,14 +34,38 @@ export class BoardsService {
   }
 
   // 보드(카드) 전체조회
-  async getBoards(projectId: number): Promise<Board[]> {
+  async getBoards(projectId: number): Promise<any> {
+    const customBoards = [];
     const boards = await this.boardRepository.find({
       where: { project: { id: projectId } },
       relations: ['boardColumn'],
       order: { boardSequence: 'ASC' },
     });
 
-    return boards;
+    for (const board of boards) {
+      const collaboratorsId = board.collaborators.map((x) => {
+        return { id: x };
+      });
+      const collaboratorsUserName = (await this.projectMemberRepository.find({ where: collaboratorsId, relations: ['user'] })).map(
+        (x) => x.user.name,
+      );
+
+      customBoards.push({
+        id: board.id,
+        title: board.title,
+        content: board.content,
+        collaborators: collaboratorsUserName,
+        color: board.color,
+        file: board.file,
+        deadlineAt: board.deadlineAt,
+        boardSequence: board.boardSequence,
+        createdAt: board.createdAt,
+        updatedAt: board.updatedAt,
+        boardColumn: board.boardColumn,
+      });
+    }
+
+    return customBoards;
   }
 
   // 보드(카드) 디테일
@@ -45,6 +73,7 @@ export class BoardsService {
     const boardDetail = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } }, relations: ['user', 'comments'] });
 
     if (!boardDetail) throw new HttpException('해당 보드를 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
     return boardDetail;
   }
 

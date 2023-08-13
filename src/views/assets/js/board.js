@@ -2,13 +2,15 @@ const params = new URLSearchParams(window.location.search);
 let projectId = params.get('projectId');
 let columnId = params.get('columnId');
 let boardId = params.get('boardId');
+const commentContainer = document.querySelector('#count-comments-container');
 
 $(document).ready(async () => {
   await getColumns();
   getBoards();
-  $('#post-details-modal').modal('hide');
 });
 
+// 댓글 수
+let countComments = 0;
 const refreshToken = document.cookie.split('=')[1];
 const accessToken = localStorage.getItem('accessToken');
 const printColumns = document.querySelector('#columns-container');
@@ -310,11 +312,51 @@ async function getBoards() {
   });
 }
 
+function getDaysAgoFromNow(dateString) {
+  const givenDate = new Date(dateString);
+  const currentDate = new Date(); // 현재 시간
+  const oneDay = 24 * 60 * 60 * 1000; // 하루의 밀리초
+
+  // 날짜만 비교하도록 설정
+  givenDate.setHours(0, 0, 0, 0);
+  currentDate.setHours(0, 0, 0, 0);
+
+  // 날짜를 비교하여 날짜 차이 계산
+  const timeDifference = currentDate - givenDate;
+  const daysAgo = Math.floor(timeDifference / oneDay);
+
+  if (daysAgo === 0) {
+    return '오늘';
+  } else if (daysAgo === 1) {
+    return '어제';
+  } else if (daysAgo > 1 && daysAgo < 7) {
+    return `${daysAgo}일 전`;
+  } else {
+    // 7일 이상 차이나면 날짜 형식으로 반환
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return givenDate.toLocaleDateString('ko-KR', options);
+  }
+}
+
+async function getCommentsUser(projectId, boardId) {
+  // 제이쿼리 AJAX POST메서드를 사용해서 POST요청
+  return await $.get(`/projects/${projectId}/boards/${boardId}/comments`, (data, status) => {
+    if (status === 'success') {
+      return;
+    } else {
+      alert('댓글 조회 실패');
+    }
+  });
+}
+
 // 보드디테일 조회 추가
 async function boardDetail(element) {
   const boardId = element.getAttribute('id');
   const modal = document.querySelector('#post-details-modal');
 
+  const userItem = await getCommentsUser(projectId, boardId);
+
+  modal.querySelector('.comments-container').innerHTML = '';
   await $.ajax({
     method: 'GET',
     url: `projects/${projectId}/boards/${boardId}`,
@@ -326,9 +368,10 @@ async function boardDetail(element) {
       xhr.setRequestHeader('authorization', accessToken);
     },
     success: (data) => {
+      console.log(data);
       let profileImg = '';
       data.user.imageUrl
-        ? (profileImg = `<img src= "${data.user.imageUrl}"/>`)
+        ? (profileImg = `<img src="${data.user.imageUrl}"/>`)
         : (profileImg = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       let Img = '';
@@ -344,9 +387,182 @@ async function boardDetail(element) {
       <button type="button" class="btn btn-primary" onclick="openEditBoardModal(this)" id=${data.id}>수정</button>
       <button type="button" class="btn btn-secondary" onclick="deleteBoard(this)" id=${data.id}>삭제</button>
       `;
-      modal.querySelector('.comment-container').innerHTML = `
-      <input type="text" id="comment-input" placeholder="댓글을 입력하세요" />
-      <button type="button" class="comment-create-btn" data-bs-dismiss="modal" onclick="createComment(this)" id=${data.id}>작성</button>`;
+      modal.querySelector('.input-group').innerHTML = `<div>
+      <input id="comment-input" type="text" class="form-control" placeholder="댓글을 입력해주세요.">
+      <button id="comment-create-btn" data-id="${data.id}"  class="btn btn-primary">작성</button>
+    </div>`;
+
+      const cbtn = document.getElementById('comment-create-btn');
+
+      // 댓글 작성 버튼 온클릭
+      cbtn.addEventListener('click', () => {
+        const commentInput = document.querySelector('#comment-input').value;
+        if (!commentInput) {
+          alert('댓글을 입력해주세요.');
+          return;
+        }
+        createComment(cbtn, commentInput);
+      });
+
+      // 댓글 저장 함수
+      async function createComment(element, content, reply) {
+        const boardId = element.getAttribute('data-id'); // boardId 추출
+        let replyId = '';
+        if (reply) {
+          replyId = reply;
+        } else {
+          replyId = null;
+        }
+        const req = {
+          replyId,
+          content,
+        };
+        // 제이쿼리 AJAX POST메서드를 사용해서 POST요청
+        await $.post(
+          `/projects/${projectId}/boards/${boardId}/comments`,
+          req, // 서버가 필요한 정보를 같이 보냄.
+          (data, status) => {
+            console.log(data, status);
+            if (status === 'success') {
+              alert(data.message);
+              location.reload();
+              $('#post-details-modal').modal('show');
+            } else {
+              alert('댓글 저장 실패');
+            }
+          },
+        );
+      }
+
+      const arrData = [data];
+      arrData.forEach((item) => {
+        countComments = item.comments.length;
+      });
+
+      commentContainer.innerHTML = `<div>
+                                      <h5 class="count-comments">댓글 수 (${countComments})</h5>
+                                      </div>`;
+
+      userItem.forEach((item) => {
+        username = item.user.name;
+        userImg = item.user.imageUrl;
+        const daysAgoStr = getDaysAgoFromNow(item.createdAt);
+
+        // 댓글(답글 제외)
+        if (!item.replyId) {
+          let tempHtml = `<div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
+          <div class="col-md-10">
+            <!-- 댓글 하나  -->
+            <div class="card p-3 mt-2" id="comment-1" data-commentId="${item.id}">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="user d-flex flex-row align-items-center">
+                  <img src="${userImg}"
+                    width="40" class="user-img rounded-circle mr-2">
+                  <span class="comment-name">
+                  <p class="font-weight-bold text-primary"style="margin-left: 1rem; font-size: 1rem;">${username}</p>
+                  </span>
+                </div>
+                <small>${daysAgoStr}</small>
+              </div>
+              <div class="comment-txt">
+                <p>${item.content}</p>
+              </div>
+
+              <div class="action d-flex justify-content-between mt-2 align-items-center">
+                <div class="reply px-4">
+                  <small id="" data-comment-id=${item.id}>답글</small>
+                  <span class="dots"></span>
+                  <small id="edit-comment" data-comment-id=${item.id}>수정</small>
+                  <span class="dots"></span>
+                  <small id="del-comment" class="click-del-comment" data-comment-id=${item.id}>삭제</small>
+                </div>
+                <div class="icons align-items-center">
+                  <i class="fa fa-check-circle-o check-icon text-primary"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+          $('.comments-container').append(tempHtml);
+        } else {
+          // 답글 조회 어떻게 해야될지 생각 안나서 보류 .
+          const replyComment = document.querySelectorAll('#comment-1');
+          replyComment.forEach((item) => {
+            // console.log(item.dataset.commentid);
+          });
+        }
+      });
+
+      const clickEditComment = document.querySelectorAll('#edit-comment');
+      clickEditComment.forEach((item) => {
+        item.addEventListener('click', () => {
+          $('#comment-edit-modal').modal('show');
+          // 댓글 수정 버튼 이벤트
+          const editCommentBtn = document.getElementById('comment-edit-btn');
+          editCommentBtn.addEventListener('click', () => {
+            const commentInput = document.getElementById('comment-edit-input').value;
+            editComment(item.dataset.commentId, boardId, projectId, commentInput);
+          });
+        });
+      });
+
+      // 댓글 삭제 버튼 이벤트
+      const delCommentBtn = document.querySelectorAll('#del-comment');
+      delCommentBtn.forEach((item) => {
+        item.addEventListener('click', () => {
+          delComment(item.dataset.commentId);
+        });
+      });
+
+      // 댓글 삭제 함수
+      async function delComment(commentId) {
+        try {
+          const result = await $.ajax({
+            url: `/projects/${projectId}/boards/${boardId}/comments/${commentId}`,
+            method: 'DELETE',
+            dataType: 'json', // 응답 데이터를 JSON 형식으로 처리하기 위해 변경
+            headers: {
+              Accept: 'application/json',
+            },
+          });
+          if (result.message) {
+            alert(result.message);
+            location.reload();
+          }
+        } catch (error) {
+          console.log(error);
+          alert('본인이 작성한 댓글이 아니거나, 댓글이 존재하지 않습니다.');
+        }
+      }
+
+      // 댓글 수정 함수
+      async function editComment(commentId, boardId, projectId, content) {
+        if (!content) {
+          alert('수정할 댓글을 입력해주세요');
+        }
+        try {
+          const req = {
+            content,
+          };
+          const result = await $.ajax({
+            url: `/projects/${projectId}/boards/${boardId}/comments/${commentId}`,
+            method: 'PUT',
+            dataType: 'json', // 응답 데이터를 JSON 형식으로 처리하기 위해 변경
+            headers: {
+              Accept: 'application/json',
+            },
+            data: req,
+          });
+          if (result.message) {
+            alert(result.message);
+            location.reload();
+          }
+        } catch (error) {
+          console.log(error);
+          alert('본인이 작성한 댓글이 아니거나, 댓글이 존재하지 않습니다.');
+          location.reload();
+        }
+      }
       $('#post-details-modal').modal('show');
     },
     error: (error) => {
