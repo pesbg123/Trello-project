@@ -15,7 +15,8 @@ export class CommentsService {
   ) {}
 
   // 댓글 생성
-  async createComment(content: string, id: number, projectId: number, boardId: number, replyId: string): Promise<string> {
+  async createComment(content: string, id: number, projectId: number, boardId: number, replyId: number): Promise<string> {
+    console.log(content, id, typeof projectId, typeof boardId, typeof replyId);
     // 데이터 유효성 검증
     if (!content) {
       throw new BadRequestException('댓글을 입력해주세요.');
@@ -31,7 +32,7 @@ export class CommentsService {
       return;
     }
     // 댓글 저장
-    if (replyId === null) {
+    if (!replyId) {
       const newComment = this.commentRepository.create({
         content,
         user: { id },
@@ -39,7 +40,7 @@ export class CommentsService {
       });
       await this.commentRepository.save(newComment);
       return '댓글 작성에 성공했습니다.';
-    } else if (typeof replyId === 'number') {
+    } else if (replyId) {
       const newReply = this.commentRepository.create({
         replyId,
         content,
@@ -48,8 +49,6 @@ export class CommentsService {
       });
       await this.commentRepository.save(newReply);
       return '대댓글 작성에 성공했습니다.';
-    } else if (typeof replyId === 'string') {
-      throw new BadRequestException('replyId의 데이터 형식이 올바르지 않습니다.');
     } else {
       throw new HttpException('댓글 수정중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -67,7 +66,7 @@ export class CommentsService {
     if (!existProject) {
       return;
     }
-    return await this.commentRepository.find({ where: { board: { id: boardId } }, order: { createdAt: 'DESC' } });
+    return await this.commentRepository.find({ where: { board: { id: boardId } }, relations: ['user'], order: { createdAt: 'DESC' } });
   }
 
   // 댓글 수정
@@ -84,8 +83,9 @@ export class CommentsService {
     }
     // 해당 코멘트가 존재하는지 (본인이 작성한건지 검증)
     const existComment = await this.commentRepository.findOne({ where: { id: commentId, user: { id } } });
+    console.log(existComment);
     if (!existComment) {
-      throw new HttpException('해당 댓글을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+      throw new HttpException('본인이 작성한 댓글이 아닙니다.', HttpStatus.FORBIDDEN);
     }
     // 코멘트 수정
     const result = await this.commentRepository.update({ id: commentId }, { content });
