@@ -61,7 +61,6 @@ export class BoardColumnsService {
         const changeSequence = findColumn.sequence;
         findColumn.sequence = targetColumn.sequence;
         targetColumn.sequence = changeSequence;
-        console.log(findColumn, targetColumn);
         await transactionEntityManager.save(BoardColumn, [findColumn, targetColumn]);
       }
 

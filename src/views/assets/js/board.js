@@ -17,8 +17,6 @@ const printColumns = document.querySelector('#columns-container');
 
 // 컬럼 조회
 async function getColumns() {
-  const projectId = 11; // 임시
-
   await $.ajax({
     method: 'GET',
     url: `/projects/${projectId}/columns`,
@@ -34,7 +32,7 @@ async function getColumns() {
       data.forEach((column) => {
         result += `<div class="col-lg-4">
                     <div class="card">
-                      <div class="card-header" data-sequence=${column.sequence}>${column.name}</div>
+                      <div class="card-header" data-sequence=${column.sequence} onclick="openUpdateColumnModal(this)" id=${column.id}>${column.name}</div>
                       <div class="card-body" data-column-id="${column.id}">
                       </div>
                         <!-- 보드 카드 추가 될 부분 -->
@@ -42,6 +40,7 @@ async function getColumns() {
                           <button type="button" id="add-board-btn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scrollingModal">
                           보드 추가
                         </button>
+                        <button type="button" class="btn btn-secondary" onclick="deleteColumn(this)" id=${column.id}>컬럼 삭제</button>
                       </div>
                     </div>
                   </div>`;
@@ -67,10 +66,9 @@ async function getColumns() {
   });
 }
 
+// 컬럼 이동
 async function moveColumnSequence(columnId, newSequence) {
   try {
-    const projectId = 11; // 프로젝트 ID
-
     await $.ajax({
       method: 'PATCH',
       url: `/projects/${projectId}/columns/${columnId}/order`,
@@ -87,7 +85,7 @@ async function moveColumnSequence(columnId, newSequence) {
       },
       error: function (error) {
         console.error('컬럼 순서 변경 에러:', error);
-        // window.location.reload();
+        window.location.reload();
       },
     });
   } catch (error) {
@@ -102,7 +100,6 @@ async function moveColumnSequence(columnId, newSequence) {
 // 컬럼 생성
 async function createColumn() {
   const columnName = document.querySelector('#columnName-input').value;
-  const projectId = 11;
   try {
     await $.ajax({
       method: 'POST',
@@ -135,14 +132,98 @@ async function createColumn() {
   }
 }
 
-// 컬럼명 수정 추가
+// 컬럼 수정 모달 열기
+function openUpdateColumnModal(element) {
+  const columnNameInput = document.querySelector('#update-columnName-input');
+  columnNameInput.value = '';
 
-// 컬럼 삭제 추가
+  const columnId = element.getAttribute('id');
+
+  $('#update-column-modal').modal('show');
+
+  // 업데이트버튼에 id값을 넣고 updateColumn에 넘겨줌
+  const updateButton = document.querySelector('#update-column-modal .btn-primary');
+  updateButton.setAttribute('id', columnId);
+}
+
+// 컬럼명 수정
+async function updateColumn() {
+  const columnName = document.querySelector('#update-columnName-input').value;
+  const updateButton = document.querySelector('#update-column-modal .btn-primary');
+  const columnId = updateButton.getAttribute('id');
+
+  try {
+    await $.ajax({
+      method: 'PATCH',
+      url: `projects/${projectId}/columns/${columnId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      data: JSON.stringify({ columnName }),
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: '컬럼 수정 완료',
+        }).then(() => {
+          window.location.reload();
+        });
+
+        $('#update-column-modal').modal('hide');
+      },
+      error: () => {},
+    });
+  } catch (error) {
+    console.error(error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
+
+// 컬럼 삭제
+async function deleteColumn(element) {
+  const columnId = element.getAttribute('id');
+
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `projects/${projectId}/columns/${columnId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: '컬럼 삭제 완료',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+      error: () => {},
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
 
 // 보드 조회
 async function getBoards() {
-  const projectId = 11; // 임시
-
   await $.ajax({
     method: 'GET',
     url: `/projects/${projectId}/boards`,
@@ -174,11 +255,12 @@ async function getBoards() {
         let columnHtml = '';
 
         column.forEach((board) => {
-          columnHtml += `<div class="card mb-3">
+          columnHtml += `<div class="card mb-3" style="border:1px solid ${board.color}; background-color: ${board.color}10;">
                           <div id="boards-container" class="card-body">
                             <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
-                            <p class="card-text" id=${board.id} onclick="boardDetail(this)" style="cursor: pointer;"> ${board.content}</p>
-                            <p class="card-deadline">${board.deadlineAt}</p>
+                            <p class="card-text" id=${board.id} onclick="boardDetail(this)"> ${board.content}</p>
+                            <p class="card-deadline">${'마감일:' + board.deadlineAt.substring(0, 10).replace('-', '.').replace('-', '.')}</p>
+                            <span class="badge bg-primary">${'담당자:' + board.collaborators}</span>
                             <div class="d-flex justify-content-between">
                            </div>
                           </div>
@@ -272,8 +354,6 @@ async function boardDetail(element) {
   const boardId = element.getAttribute('id');
   const modal = document.querySelector('#post-details-modal');
 
-  const projectId = 11; // 임시
-
   const userItem = await getCommentsUser(projectId, boardId);
 
   modal.querySelector('.comments-container').innerHTML = '';
@@ -288,23 +368,28 @@ async function boardDetail(element) {
       xhr.setRequestHeader('authorization', accessToken);
     },
     success: (data) => {
+      console.log(data);
       let profileImg = '';
       data.user.imageUrl
-        ? (profileImg = data.user.imageUrl)
-        : (profileImg = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+        ? (profileImg = `<img src="${data.user.imageUrl}"/>`)
+        : (profileImg = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       let Img = '';
 
-      data.file ? (Img = data.file) : (Img = '<img src="/src/views/assets/img/apple-touch-icon.png" id="default-img"/>');
+      data.file ? (Img = `<img src= "${data.file}"/>`) : (Img = '<img src="/assets/img/apple-touch-icon.png" id="default-img"/>');
 
       modal.querySelector('.modal-title').textContent = data.title;
-      modal.querySelector('.profile-img').innerHTML = ` <img src="${profileImg}">`;
+      modal.querySelector('.profile-img').innerHTML = profileImg;
       modal.querySelector('.profile-name').textContent = data.user.name;
       modal.querySelector('.board-img').innerHTML = Img;
       modal.querySelector('.content').textContent = data.content;
+      modal.querySelector('.button-container').innerHTML = `
+      <button type="button" class="btn btn-primary" onclick="openEditBoardModal(this)" id=${data.id}>수정</button>
+      <button type="button" class="btn btn-secondary" onclick="deleteBoard(this)" id=${data.id}>삭제</button>
+      `;
       modal.querySelector('.input-group').innerHTML = `<div>
       <input id="comment-input" type="text" class="form-control" placeholder="댓글을 입력해주세요.">
-      <button id="comment-create-btn" data-id="${boardId}"  class="btn btn-primary">작성</button>
+      <button id="comment-create-btn" data-id="${data.id}"  class="btn btn-primary">작성</button>
     </div>`;
 
       const cbtn = document.getElementById('comment-create-btn');
@@ -486,21 +571,150 @@ async function boardDetail(element) {
   });
 }
 
-// 보드 수정
-async function editBoard(boardId) {
-  const projectId = 11;
+// 보드 수정 모달
+async function openEditBoardModal(element) {
+  const boardId = element.getAttribute('id');
 
-  const formData = new FormData();
-  const title = await $.ajax({
-    method: '',
+  const editModal = document.querySelector('#scrollingEditModal');
+  const memberList = editModal.querySelector('#editMemberList');
+  const titleInput = editModal.querySelector('#editTitle');
+  const contentInput = editModal.querySelector('#editContent');
+  const colorInput = editModal.querySelector('#editColor');
+  const deadDateInput = editModal.querySelector('#editDeadDate');
+
+  const api = await fetch(`/projects/${projectId}`);
+  const result = await api.json();
+
+  result.project.projectMembers.forEach((info) => {
+    memberList.innerHTML += `<div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="createMembers" value="${info.id}" id="user${info.id}">
+                      <label class="form-check-label" for="user${info.id}"> ${info.user.name}</label>
+                    </div>`;
+  });
+
+  await $.ajax({
+    method: 'GET',
+    url: `/projects/${projectId}/boards/${boardId}`,
+    headers: {
+      Accept: 'application/json',
+    },
+    beforeSend: function (xhr) {
+      xhr.setRequestHeader('Content-type', 'application/json');
+      xhr.setRequestHeader('authorization', accessToken);
+    },
+    success: (data) => {
+      titleInput.value = data.title;
+      contentInput.value = data.content;
+      colorInput.value = data.color;
+      deadDateInput.value = data.deadlineAt;
+
+      $('#scrollingEditModal').modal('show');
+
+      // 업데이트버튼에 id값을 넣고 editBoard에 넘겨줌
+      const editButton = document.querySelector('#editBoardBtn');
+      editButton.setAttribute('id', boardId);
+    },
+    error: (error) => {
+      console.error(error);
+    },
   });
 }
+
+// 보드 수정
+async function editBoard(button) {
+  const boardId = button.getAttribute('id');
+  const editTitle = document.getElementById('editTitle');
+  const editContent = document.getElementById('editContent');
+  const editDeadDate = document.getElementById('editDeadDate');
+  const editColor = document.getElementById('editColor');
+  const editFile = document.getElementById('editFile');
+
+  let formData = new FormData();
+
+  const editMembers = document.getElementsByName('createMembers');
+  let memberList = [];
+  editMembers.forEach((x) => {
+    if (x.checked) {
+      memberList.push(x.value);
+    }
+  });
+
+  formData.append('newFile', editFile.files[0]);
+  formData.append('title', editTitle.value);
+  formData.append('content', editContent.value);
+  formData.append('collaborators', memberList);
+  formData.append('color', editColor.value);
+  formData.append('deadlineAt', editDeadDate.value);
+
+  try {
+    await $.ajax({
+      method: 'PATCH',
+      url: `/projects/${projectId}/boards/${boardId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: 'json',
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: '보드 수정완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
+
 // 보드 삭제
+async function deleteBoard(element) {
+  const boardId = element.getAttribute('id');
+
+  try {
+    await $.ajax({
+      method: 'DELETE',
+      url: `/projects/${projectId}/boards/${boardId}`,
+      headers: {
+        Accept: 'application/json',
+      },
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('Content-type', 'application/json');
+        xhr.setRequestHeader('authorization', accessToken);
+      },
+      success: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: '보드 삭제완료!',
+        }).then(() => {
+          window.location.reload();
+        });
+      },
+    });
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: error.responseJSON.message,
+    });
+  }
+}
 
 // 보드 동일 컬럼 내 이동
 async function orderBoardSequence(boardId, newBoardSequence) {
-  const projectId = 11; // 임시
-
   await $.ajax({
     method: 'PATCH',
     url: `/projects/${projectId}/boards/${boardId}/order`,
@@ -512,7 +726,7 @@ async function orderBoardSequence(boardId, newBoardSequence) {
       xhr.setRequestHeader('authorization', accessToken);
     },
     data: JSON.stringify({ newBoardSequence }),
-    success: (data) => {},
+    success: () => {},
     error: (error) => {
       console.error(error);
     },
@@ -521,8 +735,6 @@ async function orderBoardSequence(boardId, newBoardSequence) {
 
 // 보드 다른 컬럼으로 이동
 async function moveBoard(boardId, columnId) {
-  const projectId = 11; // 임시
-
   await $.ajax({
     method: 'PATCH',
     url: `/projects/${projectId}/boards/${boardId}/${columnId}/move`,
@@ -533,14 +745,12 @@ async function moveBoard(boardId, columnId) {
       xhr.setRequestHeader('Content-type', 'application/json');
       xhr.setRequestHeader('authorization', accessToken);
     },
-    success: (data) => {},
+    success: () => {},
     error: (error) => {
       console.error(error);
     },
   });
 }
-
-// 파일다운로드 테스트필요
 
 /** GET DATA */
 const createStatus = document.getElementById('createStatus');
@@ -557,8 +767,8 @@ const createBoardBtn = document.getElementById('createBoardBtn');
 
 const statusAndMembers = async () => {
   // const searchParams = new URL(location.href).searchParams;
-  const urlParams = new URL('http://localhost:3000/projects?projectId=15').searchParams;
-  const projectId = urlParams.get('projectId');
+  // const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
+  // const projectId = urlParams.get('projectId');
 
   const api = await fetch(`/projects/${projectId}`);
   const result = await api.json();
@@ -577,8 +787,8 @@ const statusAndMembers = async () => {
 
 createBoardBtn.addEventListener('click', async () => {
   // const searchParams = new URL(location.href).searchParams;
-  const urlParams = new URL('http://localhost:3000/projects?projectId=15').searchParams;
-  const projectId = urlParams.get('projectId');
+  // const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
+  // const projectId = urlParams.get('projectId');
 
   let memberList = [];
   createMembers.forEach((x) => {
@@ -601,7 +811,7 @@ createBoardBtn.addEventListener('click', async () => {
   formData.append('collaborators', memberList);
   formData.append('color', createColor.value);
   formData.append('deadlineAt', createDeadDate.value);
-  formData.append('newFile', createFile.file);
+  formData.append('newFile', createFile.files[0]);
 
   const api = await fetch(`/projects/${projectId}/boards`, {
     method: 'POST',
@@ -611,8 +821,13 @@ createBoardBtn.addEventListener('click', async () => {
   const result = await api.json();
 
   if (result.result) {
-    alert('보드가 생성되었습니다.');
-    window.location.hr;
+    Swal.fire({
+      icon: 'success',
+      title: 'Success',
+      text: '보드 생성완료!',
+    }).then(() => {
+      window.location.reload();
+    });
   }
 });
 

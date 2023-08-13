@@ -14,7 +14,6 @@ export class CheckMemberInterceptor implements NestInterceptor {
     const { projectId } = req.params;
 
     await this.projectService.checkMember(projectId, id);
-
     return next.handle().pipe(
       tap((data: IResult) => {
         return data;
