@@ -417,6 +417,7 @@ async function boardDetail(element) {
           replyId,
           content,
         };
+        document.querySelector('#comment-input').value = '';
         // 제이쿼리 AJAX POST메서드를 사용해서 POST요청
         await $.post(
           `/projects/${projectId}/boards/${boardId}/comments`,
@@ -428,9 +429,8 @@ async function boardDetail(element) {
                 title: 'Success!',
                 text: data.message,
               }).then(() => {
-                window.location.reload();
+                $('#post-details-modal').modal('show');
               });
-              $('#post-details-modal').modal('show');
             } else {
               alert('댓글 저장 실패');
             }
@@ -449,7 +449,7 @@ async function boardDetail(element) {
 
       userItem.forEach((item) => {
         username = item.user.name;
-        userImg = item.user.imageUrl;
+        userImg = item.user.imageUrl ? item.user.imageUrl : `/assets/img/apple-touch-icon.png" id="default-img"`;
         const daysAgoStr = getDaysAgoFromNow(item.createdAt);
         // 댓글(답글 제외)
         if (!item.replyId) {
