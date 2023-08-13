@@ -54,16 +54,7 @@ export class ViewController {
   async project(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'IDLE', subtitle: '보드', header };
-
-  @Get('chatRoom')
-  @UseGuards(ViewAuthGuard)
-  @Render('chat-room.ejs')
-  async chatRoom(@Req() req: IRequest) {
-    const user: IAccessPayload = req.user;
-    const header = await this.viewService.header(user);
-
-    return { title: 'IDLE', subtitle: '프로젝트 채팅 방', header };
+    return {title: 'IDLE', subtitle: '보드', header};
   }
 
   @Get('chatRoom')
