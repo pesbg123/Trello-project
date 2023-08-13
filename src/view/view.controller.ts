@@ -47,13 +47,14 @@ export class ViewController {
     return { title: 'IDLE', subtitle: '프로젝트 멤버 초대', header };
   }
 
+
   @Get('project')
   @UseGuards(ViewAuthGuard)
   @Render('board.ejs')
   async project(@Req() req: IRequest) {
     const user: IAccessPayload = req.user;
     const header = await this.viewService.header(user);
-    return { title: 'IDLE', subtitle: '보드', header };
+    return {title: 'IDLE', subtitle: '보드', header};
   }
 
   @Get('chatRoom')
