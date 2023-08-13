@@ -15,7 +15,6 @@ const printColumns = document.querySelector('#columns-container');
 
 // 컬럼 조회
 async function getColumns() {
-  const projectId = 18;
   await $.ajax({
     method: 'GET',
     url: `/projects/${projectId}/columns`,
@@ -68,8 +67,6 @@ async function getColumns() {
 // 컬럼 이동
 async function moveColumnSequence(columnId, newSequence) {
   try {
-    const projectId = 18; // 프로젝트 ID
-
     await $.ajax({
       method: 'PATCH',
       url: `/projects/${projectId}/columns/${columnId}/order`,
@@ -101,7 +98,6 @@ async function moveColumnSequence(columnId, newSequence) {
 // 컬럼 생성
 async function createColumn() {
   const columnName = document.querySelector('#columnName-input').value;
-  const projectId = 18;
   try {
     await $.ajax({
       method: 'POST',
@@ -153,7 +149,6 @@ async function updateColumn() {
   const columnName = document.querySelector('#update-columnName-input').value;
   const updateButton = document.querySelector('#update-column-modal .btn-primary');
   const columnId = updateButton.getAttribute('id');
-  const projectId = 18; // 임시
 
   try {
     await $.ajax({
@@ -193,7 +188,6 @@ async function updateColumn() {
 // 컬럼 삭제
 async function deleteColumn(element) {
   const columnId = element.getAttribute('id');
-  const projectId = 18;
 
   try {
     await $.ajax({
@@ -228,8 +222,6 @@ async function deleteColumn(element) {
 
 // 보드 조회
 async function getBoards() {
-  const projectId = 18; // 임시
-
   await $.ajax({
     method: 'GET',
     url: `/projects/${projectId}/boards`,
@@ -266,6 +258,7 @@ async function getBoards() {
                             <h6 class="card-title" data-board-id=${board.id}>${board.title}</h6>
                             <p class="card-text" id=${board.id} onclick="boardDetail(this)"> ${board.content}</p>
                             <p class="card-deadline">${'마감일:' + board.deadlineAt.substring(0, 10).replace('-', '.').replace('-', '.')}</p>
+                            <span class="badge bg-primary">${'담당자:' + board.collaborators}</span>
                             <div class="d-flex justify-content-between">
                            </div>
                           </div>
@@ -322,8 +315,6 @@ async function boardDetail(element) {
   const boardId = element.getAttribute('id');
   const modal = document.querySelector('#post-details-modal');
 
-  const projectId = 18; // 임시
-
   await $.ajax({
     method: 'GET',
     url: `projects/${projectId}/boards/${boardId}`,
@@ -367,7 +358,6 @@ async function boardDetail(element) {
 // 보드 수정 모달
 async function openEditBoardModal(element) {
   const boardId = element.getAttribute('id');
-  const projectId = 18; // 임시
 
   const editModal = document.querySelector('#scrollingEditModal');
   const memberList = editModal.querySelector('#editMemberList');
@@ -416,7 +406,6 @@ async function openEditBoardModal(element) {
 
 // 보드 수정
 async function editBoard(button) {
-  const projectId = 18;
   const boardId = button.getAttribute('id');
   const editTitle = document.getElementById('editTitle');
   const editContent = document.getElementById('editContent');
@@ -476,7 +465,6 @@ async function editBoard(button) {
 
 // 보드 삭제
 async function deleteBoard(element) {
-  const projectId = 18;
   const boardId = element.getAttribute('id');
 
   try {
@@ -511,8 +499,6 @@ async function deleteBoard(element) {
 
 // 보드 동일 컬럼 내 이동
 async function orderBoardSequence(boardId, newBoardSequence) {
-  const projectId = 18; // 임시
-
   await $.ajax({
     method: 'PATCH',
     url: `/projects/${projectId}/boards/${boardId}/order`,
@@ -533,8 +519,6 @@ async function orderBoardSequence(boardId, newBoardSequence) {
 
 // 보드 다른 컬럼으로 이동
 async function moveBoard(boardId, columnId) {
-  const projectId = 18; // 임시
-
   await $.ajax({
     method: 'PATCH',
     url: `/projects/${projectId}/boards/${boardId}/${columnId}/move`,
@@ -567,8 +551,8 @@ const createBoardBtn = document.getElementById('createBoardBtn');
 
 const statusAndMembers = async () => {
   // const searchParams = new URL(location.href).searchParams;
-  const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
-  const projectId = urlParams.get('projectId');
+  // const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
+  // const projectId = urlParams.get('projectId');
 
   const api = await fetch(`/projects/${projectId}`);
   const result = await api.json();
@@ -587,8 +571,8 @@ const statusAndMembers = async () => {
 
 createBoardBtn.addEventListener('click', async () => {
   // const searchParams = new URL(location.href).searchParams;
-  const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
-  const projectId = urlParams.get('projectId');
+  // const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
+  // const projectId = urlParams.get('projectId');
 
   let memberList = [];
   createMembers.forEach((x) => {
