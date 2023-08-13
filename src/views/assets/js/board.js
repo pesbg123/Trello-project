@@ -422,10 +422,14 @@ async function boardDetail(element) {
           `/projects/${projectId}/boards/${boardId}/comments`,
           req, // 서버가 필요한 정보를 같이 보냄.
           (data, status) => {
-            console.log(data, status);
             if (status === 'success') {
-              alert(data.message);
-              location.reload();
+              Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: data.message,
+              }).then(() => {
+                window.location.reload();
+              });
               $('#post-details-modal').modal('show');
             } else {
               alert('댓글 저장 실패');
@@ -447,7 +451,6 @@ async function boardDetail(element) {
         username = item.user.name;
         userImg = item.user.imageUrl;
         const daysAgoStr = getDaysAgoFromNow(item.createdAt);
-
         // 댓글(답글 제외)
         if (!item.replyId) {
           let tempHtml = `<div class="row  d-flex justify-content-center" style="margin-top: 0.8rem;">
@@ -526,8 +529,13 @@ async function boardDetail(element) {
             },
           });
           if (result.message) {
-            alert(result.message);
-            location.reload();
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: result.message,
+            }).then(() => {
+              window.location.reload();
+            });
           }
         } catch (error) {
           console.log(error);
@@ -554,8 +562,13 @@ async function boardDetail(element) {
             data: req,
           });
           if (result.message) {
-            alert(result.message);
-            location.reload();
+            Swal.fire({
+              icon: 'success',
+              title: 'Success!',
+              text: result.message,
+            }).then(() => {
+              window.location.reload();
+            });
           }
         } catch (error) {
           console.log(error);
