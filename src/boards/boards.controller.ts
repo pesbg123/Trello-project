@@ -5,10 +5,11 @@ import { CreateBoardDto, orderBoardDto, UpdateBoardDto } from 'src/_common/dtos/
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { IRequest } from 'src/_common/interfaces/request.interface';
 import { Response } from 'express';
-import { CheckPermissionInterceptor } from 'src/_common/interceptors/checkPermissionInterceptor';
+import { CheckMemberInterceptor } from 'src/_common/interceptors/checkMemberInterceptor';
+import { CheckBoardCreatorInterceptor } from 'src/_common/interceptors/checkBoardCreatorInterceptor';
 
 @Controller('projects/:projectId')
-// @UseInterceptors(CheckPermissionInterceptor)
+@UseInterceptors(CheckMemberInterceptor)
 export class BoardsController {
   constructor(private readonly boardService: BoardsService) {}
 
@@ -27,23 +28,19 @@ export class BoardsController {
   }
 
   // 보드(카드) 생성
-  @Post(':columnId/boards')
+  @Post('boards')
   @UseGuards(AccessAuthGuard)
   @UsePipes(ValidationPipe)
-  async createBoard(
-    @Body() body: CreateBoardDto,
-    @Param('projectId') projectId: number,
-    @Param('columnId') columnId: number,
-    @Req() req: IRequest,
-  ): Promise<IResult> {
+  async createBoard(@Body() body: CreateBoardDto, @Req() req: IRequest, @Param('projectId') projectId: number): Promise<IResult> {
     const { id } = req.user;
     const boardImg = req.file ? req.file.location : null;
-    return await this.boardService.createBoard(body, id, projectId, columnId, boardImg);
+    return await this.boardService.createBoard(body, id, boardImg, projectId);
   }
 
   // 보드(카드) 수정
   @Patch('boards/:boardId')
   @UseGuards(AccessAuthGuard)
+  @UseInterceptors(CheckBoardCreatorInterceptor)
   async updateBoard(
     @Body() body: UpdateBoardDto,
     @Param('projectId') projectId: number,
@@ -71,6 +68,7 @@ export class BoardsController {
   // 보드(카드) 삭제
   @Delete('boards/:boardId')
   @UseGuards(AccessAuthGuard)
+  @UseInterceptors(CheckBoardCreatorInterceptor)
   async deleteBoard(@Param('projectId') projectId: number, @Param('boardId') boardId: number): Promise<IResult> {
     return await this.boardService.deleteBoard(projectId, boardId);
   }

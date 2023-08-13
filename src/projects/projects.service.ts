@@ -58,7 +58,10 @@ export class ProjectsService {
     });
     if (!existAuthorization) throw new HttpException('해당 프로젝트의 조회 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
 
-    const project = await this.projectRepository.findOne({ where: { id: projectId } });
+    const project = await this.projectRepository.findOne({
+      where: { id: projectId },
+      relations: ['projectMembers', 'projectMembers.user', 'boardColumns'],
+    });
 
     const projectMembers = await this.projectMemberRepository
       .createQueryBuilder('member')
@@ -165,9 +168,8 @@ export class ProjectsService {
     return { result: true };
   }
 
-  async checkPermission(projectId: number, userId: number): Promise<IResult> {
+  async checkMember(projectId: number, userId: number): Promise<IResult> {
     const user = await this.projectMemberRepository.findOne({ where: { project: { id: projectId }, user: { id: userId }, participation: true } });
-
     if (!user) throw new HttpException('해당 권한이 없습니다.', HttpStatus.UNAUTHORIZED);
     return { result: true };
   }

@@ -15,7 +15,7 @@ export class CommentsController {
     @Param('projectId') projectId: number,
     @Param('boardId') boardId: number,
     @Body('content') content: string,
-    @Body('replyId') replyId: string,
+    @Body('replyId') replyId: number,
     @Req() req: IRequest,
     @Res() res: Response,
   ): Promise<void> {

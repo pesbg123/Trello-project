@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, MaxLength, IsNumber } from 'class-validator';
 
 export class CreateBoardDto {
   @IsString()
@@ -12,7 +12,7 @@ export class CreateBoardDto {
   content: string;
 
   @IsNotEmpty({ message: '담당자를 입력해주세요' })
-  collaborators: string;
+  collaborators: number[];
 
   @IsString()
   @IsNotEmpty({ message: '색상을 입력해주세요' })
@@ -20,6 +20,10 @@ export class CreateBoardDto {
 
   @IsNotEmpty({ message: '마감기한을 입력해주세요.' })
   deadlineAt: Date;
+
+  @IsNumber()
+  @IsNotEmpty()
+  columnId: number;
 }
 
 export class UpdateBoardDto {
@@ -34,7 +38,7 @@ export class UpdateBoardDto {
   content: string;
 
   @IsNotEmpty({ message: '담당자를 입력해주세요' })
-  collaborators: string[];
+  collaborators: number[];
 
   @IsString()
   @IsNotEmpty({ message: '색상을 입력해주세요' })

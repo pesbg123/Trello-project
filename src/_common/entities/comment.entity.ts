@@ -8,7 +8,7 @@ export class Comment {
   id: number;
 
   @Column({ nullable: true })
-  replyId: string;
+  replyId: number;
 
   @Column({ nullable: false, length: 200 })
   content: string;

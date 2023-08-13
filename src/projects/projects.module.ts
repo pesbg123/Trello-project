@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { ProjectsController } from './projects.controller';
 import { ProjectsService } from './projects.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -15,7 +15,6 @@ import { TokenValidMiddleware } from 'src/_common/middlewares/token.valid.middle
   imports: [TypeOrmModule.forFeature([Project, ProjectMember, User])],
   controllers: [ProjectsController],
   providers: [ProjectsService, JwtService, AccessAuthGuard, UsersService, MailService],
-  exports: [ProjectsService],
 })
 export class ProjectsModule {
   configure(consumer: MiddlewareConsumer) {

@@ -3,11 +3,11 @@ import { BoardColumnsService } from './board-columns.service';
 import { CreateColumnDto, orderColumnDto, updateColumnDto } from 'src/_common/dtos/boardColumn.dto';
 import { IResult } from 'src/_common/interfaces/result.interface';
 import { AccessAuthGuard } from 'src/_common/middlewares/security/access.auth.guard';
-import { CheckCreatorInterceptor } from 'src/_common/interceptors/checkCreatorInterceptor';
+import { CheckProjectCreatorInterceptor } from 'src/_common/interceptors/checkProjectCreatorInterceptor';
 
 @Controller('projects/:projectId/columns')
 @UseGuards(AccessAuthGuard)
-@UseInterceptors(CheckCreatorInterceptor)
+@UseInterceptors(CheckProjectCreatorInterceptor)
 export class BoardColumnsController {
   constructor(private readonly boardColumnService: BoardColumnsService) {}
 
