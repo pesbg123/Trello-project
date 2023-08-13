@@ -47,22 +47,7 @@
     ></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
-    <script>
-      const socket = io('/');
-      function test() {
-        const data = {
-          id: 5,
-          tilte: '쮓',
-          address: '상하이',
-        };
-        socket.emit('test', data);
-      }
-
-      //해당 로그인 되어있는 유저가 받음
-      socket.on('tester', (data) => {
-        console.log('이게 연결된다고?? ' + data.tilte, data.address);
-      });
-    </script>
+    <script src="/assets/js/socket.js" defer></script>
   </head>
 
   <body>
@@ -80,8 +65,37 @@
       <% if (header.isLogin) { %>
       <nav class="header-nav ms-auto">
         <ul class="d-flex align-items-center">
-          <button src="/assets/img/logo.png" onclick="test()">버튼</button>
-          <li class="nav-item dropdown pe-3">
+          <li class="nav-item dropdown pe-3"></li>
+
+          <!-- Start Messages Icon -->
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-chat-left-text"></i>
+              <span class="badge bg-success badge-number" id="recentMessageCount">0</span>
+            </a>
+            <!-- End Messages Icon -->
+            <div id="recent-message-container">
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" id="recentMessageList">
+                <li class="dropdown-header">최근 프로젝트 메시지</li>
+              </ul>
+            </div>
+            <!-- End Messages Dropdown Items -->
+          </li>
+          <!-- End Messages Nav -->
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-primary badge-number" id="alarmCount">0</span> </a
+            ><!-- End Notification Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" id="alarmList">
+              <li class="dropdown-header">새 알림</li>
+            </ul>
+            <!-- End Notification Dropdown Items -->
+          </li>
+          <!-- End Notification Nav -->
+
+          <li class="nav-item dropdown">
             <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
               <img src="<%= header.imageUrl %>" alt="Profile" class="rounded-circle" />
               <span class="d-none d-md-block dropdown-toggle ps-2"> <%= header.name %> </span> </a

@@ -19,6 +19,7 @@ loginBtn.addEventListener('click', async () => {
   const result = await api.json();
 
   if (result.result) {
+    window.localStorage.clear();
     window.location.href = '/';
   } else {
     alert(result.message);
