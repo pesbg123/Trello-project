@@ -32,7 +32,7 @@ export class ProjectsController {
     return res.status(HttpStatus.OK).json({ project, members, name: req.user.name });
   }
 
-  @Get('/getProjects/myProject')
+  @Get('getProjects/myProject')
   @UseGuards(AccessAuthGuard)
   async getMyProject(@Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
@@ -40,7 +40,7 @@ export class ProjectsController {
     return res.status(HttpStatus.OK).json({ myProject });
   }
 
-  @Get('/getProjects/joinProject')
+  @Get('getProjects/joinProject')
   @UseGuards(AccessAuthGuard)
   async joinProject(@Req() req: IRequest, @Res() res: Response): Promise<Object> {
     const { id } = req.user;
