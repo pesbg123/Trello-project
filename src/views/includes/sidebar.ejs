@@ -1,0 +1,70 @@
+    <!-- sidebar.js -->
+    <script src="/assets/js/sidebar.js" defer></script>
+<!-- ======= Sidebar ======= -->
+<aside id="sidebar" class="sidebar">
+  <% if (header.isLogin) { %>
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Projects</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <div id="allProjects">
+          </div>
+        </ul>
+      </li>
+  
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>Project Chatting Room</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+          <div id="projectChattingRooms">
+          </div>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#myproject-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-person"></i><span>My Projects</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="myproject-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <div id="myProjects">
+          </div>
+        </ul>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/project-register">
+          <i class="bi bi-card-list"></i>
+          <span>Project register</span>
+        </a>
+      </li>
+    </ul>
+    <% } else { %>
+      <ul class="sidebar-nav" id="sidebar-nav">
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#projects-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-menu-button-wide"></i><span>Projects</span><i class="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul id="projects-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+            <li>
+              <a> <i class="bi bi-circle"></i><span>로그인 후 이용해 주세요. </span> </a>
+            </li>
+          </ul>
+        </li>
+        <!-- End Components Nav -->
+    
+        <li class="nav-item">
+          <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+            <i class="bi bi-journal-text"></i><span>Files</span><i class="bi bi-chevron-down ms-auto"></i>
+          </a>
+          <ul id="forms-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+            <li>
+              <a> <i class="bi bi-circle"></i><span>로그인 후 이용해 주세요. </span> </a>
+            </li>
+          </ul>
+        </li>
+    <% } %>
+</aside>
+<!-- End Sidebar-->

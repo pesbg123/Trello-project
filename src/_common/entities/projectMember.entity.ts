@@ -7,14 +7,8 @@ export class ProjectMember {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column({ nullable: false, length: 20 })
-  name: string;
-
-  @Column({ nullable: false })
-  desc: string;
-
-  @Column({ nullable: true, length: 10 })
-  backgroundColor: string;
+  @Column({ nullable: false, default: false })
+  participation: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -23,13 +17,11 @@ export class ProjectMember {
   updatedAt: Date;
 
   @ManyToOne(() => User, (user) => user.projects, {
-    onDelete: 'CASCADE',
     nullable: false,
   })
   user: User;
 
   @ManyToOne(() => Project, (project) => project.projectMembers, {
-    onDelete: 'CASCADE',
     nullable: false,
   })
   project: Project;

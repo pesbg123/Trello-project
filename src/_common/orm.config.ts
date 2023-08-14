@@ -16,12 +16,13 @@ function ormConfig(): TypeOrmModuleOptions {
     port: Number(process.env.DATABASE_PORT),
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
-    logging: true,
+    // logging: true,
     synchronize: commonConf.SYNCRONIZE,
     entities: commonConf.ENTITIES,
     migrations: commonConf.MIGRATIONS,
     migrationsRun: commonConf.MIGRATIONS_RUN,
     namingStrategy: new SnakeNamingStrategy(),
+    timezone: 'Asia/Seoul',
   };
 
   return ormconfig;

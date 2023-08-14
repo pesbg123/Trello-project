@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+
+    <title><%= title %> | <%= subtitle %></title>
+    <meta content="" name="description" />
+    <meta content="" name="keywords" />
+
+    <!-- Favicons -->
+    <link href="/assets/img/favicon.png" rel="icon" />
+    <link href="/assets/img/apple-touch-icon.png" rel="apple-touch-icon" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.google.com/specimen/Nanum+Gothic?preview.text=%EA%B0%80%EB%82%98%EB%8B%A4%EB%9D%BC&preview.text_type=custom&subset=korean"
+      rel="stylesheet"
+    />
+
+    <!-- Vendor CSS Files -->
+    <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet" />
+    <link href="/assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet" />
+    <link href="/assets/vendor/quill/quill.snow.css" rel="stylesheet" />
+    <link href="/assets/vendor/quill/quill.bubble.css" rel="stylesheet" />
+    <link href="/assets/vendor/remixicon/remixicon.css" rel="stylesheet" />
+    <link href="/assets/vendor/simple-datatables/style.css" rel="stylesheet" />
+
+    <!-- Template Main CSS File -->
+    <link href="/assets/css/style.css" rel="stylesheet" />
+    <script
+      src="https://cdn.socket.io/4.3.2/socket.io.min.js"
+      integrity="sha384-KAZ4DtjNhLChOB/hxXuKqhMLYvx3b5MlT55xPEiNmREKRzeEm+RVPlTnAn0ajQNs"
+      crossorigin="anonymous"
+    ></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+
+    <!-- jquery -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.js"
+      integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+    <script src="/assets/js/socket.js" defer></script>
+  </head>
+
+  <body>
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+      <div class="d-flex align-items-center justify-content-between">
+        <a href="/" class="logo d-flex align-items-center">
+          <img src="/assets/img/logo.png" alt="" />
+          <span class="d-none d-lg-block">IDLE</span>
+        </a>
+        <i class="bi bi-list toggle-sidebar-btn"></i>
+      </div>
+      <!-- End Logo -->
+
+      <% if (header.isLogin) { %>
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+          <li class="nav-item dropdown pe-3"></li>
+
+          <!-- Start Messages Icon -->
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-chat-left-text"></i>
+              <span class="badge bg-success badge-number" id="recentMessageCount">0</span>
+            </a>
+            <!-- End Messages Icon -->
+            <div id="recent-message-container">
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages" id="recentMessageList">
+                <li class="dropdown-header">최근 프로젝트 메시지</li>
+              </ul>
+            </div>
+            <!-- End Messages Dropdown Items -->
+          </li>
+          <!-- End Messages Nav -->
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
+              <i class="bi bi-bell"></i>
+              <span class="badge bg-primary badge-number" id="alarmCount">0</span> </a
+            ><!-- End Notification Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications" id="alarmList">
+              <li class="dropdown-header">새 알림</li>
+            </ul>
+            <!-- End Notification Dropdown Items -->
+          </li>
+          <!-- End Notification Nav -->
+
+          <li class="nav-item dropdown">
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+              <img src="<%= header.imageUrl %>" alt="Profile" class="rounded-circle" />
+              <span class="d-none d-md-block dropdown-toggle ps-2"> <%= header.name %> </span> </a
+            ><!-- End Profile Iamge Icon -->
+
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li class="dropdown-header">
+                <h6><%= header.name %></h6>
+                <span> <%= header.email %> </span>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="/myprofile">
+                  <i class="bi bi-person"></i>
+                  <span>나의 프로필</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider" />
+              </li>
+
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="#" id="logoutBtn">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>로그아웃</span>
+                </a>
+              </li>
+            </ul>
+            <!-- End Profile Dropdown Items -->
+          </li>
+          <!-- End Profile Nav -->
+        </ul>
+      </nav>
+      <!-- End Icons Navigation -->
+      <script type="module" src="/assets/js/header.js"></script>
+      <% } else { %>
+      <nav class="header-nav ms-auto">
+        <ul class="d-flex align-items-center">
+          <li class="nav-item dropdown pe-3">
+            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="/login"> <span class="d-none d-md-block ps-2"> 로그인 </span> </a
+            ><!-- End Profile Iamge Icon -->
+          </li>
+        </ul>
+      </nav>
+      <% } %>
+    </header>
+    <!-- End Header -->
+  </body>
+</html>
