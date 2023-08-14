@@ -3,11 +3,34 @@ let projectId = params.get('projectId');
 let columnId = params.get('columnId');
 let boardId = params.get('boardId');
 const commentContainer = document.querySelector('#count-comments-container');
+const projectTitle = document.querySelector('#projectTitle');
 
 $(document).ready(async () => {
+  await isProjectMember();
+  getProjectTitle();
   await getColumns();
   getBoards();
 });
+
+async function isProjectMember() {
+  await $.ajax({
+    method: 'GET',
+    url: `/projects/${projectId}`,
+    success: () => {},
+    error: (error) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.responseJSON.message,
+      }).then(() => (window.location.href = '/'));
+    },
+  });
+}
+
+function getProjectTitle() {
+  const projectName = params.get('projectName');
+  projectTitle.innerHTML = projectName;
+}
 
 // 댓글 수
 let countComments = 0;
@@ -417,6 +440,7 @@ async function boardDetail(element) {
           replyId,
           content,
         };
+        document.querySelector('#comment-input').value = '';
         // 제이쿼리 AJAX POST메서드를 사용해서 POST요청
         await $.post(
           `/projects/${projectId}/boards/${boardId}/comments`,
@@ -429,8 +453,8 @@ async function boardDetail(element) {
                 text: data.message,
               }).then(() => {
                 window.location.reload();
+                $('#post-details-modal').modal('show');
               });
-              $('#post-details-modal').modal('show');
             } else {
               alert('댓글 저장 실패');
             }
@@ -449,7 +473,7 @@ async function boardDetail(element) {
 
       userItem.forEach((item) => {
         username = item.user.name;
-        userImg = item.user.imageUrl;
+        userImg = item.user.imageUrl ? item.user.imageUrl : `/assets/img/apple-touch-icon.png" id="default-img"`;
         const daysAgoStr = getDaysAgoFromNow(item.createdAt);
         // 댓글(답글 제외)
         if (!item.replyId) {
