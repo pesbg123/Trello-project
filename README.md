@@ -155,3 +155,50 @@ $('.card-body').sortable({
   },
 });
 ```
+
+```javascript
+  // 보드(카드) 동일 컬럼 내 이동
+  async orderBoard(body: orderBoardDto, projectId: number, boardId: number): Promise<IResult> {
+    const { newBoardSequence } = body;
+    const entityManager = this.boardRepository.manager;
+
+    const findBoard = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
+
+    if (!findBoard) throw new HttpException('해당 보드를 찾을 수 없습니다', HttpStatus.NOT_FOUND);
+
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const targetBoard = await this.boardRepository.findOne({ where: { boardSequence: newBoardSequence } });
+
+      if (targetBoard) {
+        const changeSequence = findBoard.boardSequence;
+        findBoard.boardSequence = targetBoard.boardSequence;
+        targetBoard.boardSequence = changeSequence;
+        await transactionEntityManager.save(Board, [findBoard, targetBoard]);
+      }
+
+      findBoard.boardSequence = newBoardSequence;
+      await transactionEntityManager.save(Board, findBoard);
+    });
+
+    return { result: true };
+  }
+
+  // 보드(카드) 다른 컬럼으로 이동
+  async moveBoard(projectId: number, boardId: number, columnId: number): Promise<IResult> {
+    const targetBoard = await this.boardRepository.findOne({ where: { id: boardId, project: { id: projectId } } });
+    const targetColumn = await this.boardColumnRepository.findOne({ where: { id: columnId }, relations: ['boards'] });
+    const entityManager = this.boardRepository.manager;
+
+    if (!targetBoard || !targetColumn) throw new HttpException('해당 보드 또는 컬럼을 찾을 수 없습니다.', HttpStatus.NOT_FOUND);
+
+    await entityManager.transaction(async (transactionEntityManager: EntityManager) => {
+      const maxSequence = targetColumn.boards.reduce((max, b) => Math.max(max, b.boardSequence), 0);
+
+      targetBoard.boardColumn = targetColumn;
+      targetBoard.boardSequence = maxSequence + 1;
+      await transactionEntityManager.save(Board, targetBoard);
+    });
+
+    return { result: true };
+  }
+```
