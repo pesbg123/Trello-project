@@ -50,7 +50,7 @@ export class CommentsService {
       await this.commentRepository.save(newReply);
       return '대댓글 작성에 성공했습니다.';
     } else {
-      throw new HttpException('댓글 수정중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('댓글 생성에 실패하였습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -90,7 +90,7 @@ export class CommentsService {
     // 코멘트 수정
     const result = await this.commentRepository.update({ id: commentId }, { content });
     if (!result.affected) {
-      throw new HttpException('댓글 수정중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('댓글 수정에 실패하였습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     return '댓글 수정에 성공했습니다.';
   }
@@ -117,7 +117,7 @@ export class CommentsService {
     if (data.id === undefined) {
       return '댓글을 성공적으로 삭제했습니다.';
     } else {
-      throw new HttpException('댓글 삭제중 서버 내부 오류 발생', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('댓글 삭제에 실패하였습니다.', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

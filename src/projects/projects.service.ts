@@ -138,7 +138,7 @@ export class ProjectsService {
     const id = await this.userService.findUser(email);
 
     const existMember = await this.projectMemberRepository.findOne({ where: { user: { id }, project: { id: projectId } } });
-    if (existMember) throw new HttpException('이미 초대된 유저입니다. ', HttpStatus.BAD_REQUEST);
+    if (existMember) throw new HttpException('이미 초대된 유저입니다. ', HttpStatus.CONFLICT);
 
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
