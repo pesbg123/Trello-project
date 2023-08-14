@@ -52,7 +52,6 @@ passowrdEditBtn.addEventListener('click', async () => {
   if (!/^(?=.*[a-zA-z])(?=.*[0-9])(?=.*[$`~!@$!%*#^?&\\(\\)\-_=+])/.test(editNewPassword.value))
     return alert('패스워드는 영문, 숫자, 특수문자를 최소 1가지 이상 조합해야 합니다.');
 
-  console.log(new EditPassword());
   const api = await fetch('/users/password', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },

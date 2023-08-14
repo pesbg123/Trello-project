@@ -391,7 +391,6 @@ async function boardDetail(element) {
       xhr.setRequestHeader('authorization', accessToken);
     },
     success: (data) => {
-      console.log(data);
       let profileImg = '';
       data.user.imageUrl
         ? (profileImg = `<img src="${data.user.imageUrl}"/>`)

@@ -16,7 +16,6 @@ export class CommentsService {
 
   // 댓글 생성
   async createComment(content: string, id: number, projectId: number, boardId: number, replyId: number): Promise<string> {
-    console.log(content, id, typeof projectId, typeof boardId, typeof replyId);
     // 데이터 유효성 검증
     if (!content) {
       throw new BadRequestException('댓글을 입력해주세요.');
@@ -83,7 +82,6 @@ export class CommentsService {
     }
     // 해당 코멘트가 존재하는지 (본인이 작성한건지 검증)
     const existComment = await this.commentRepository.findOne({ where: { id: commentId, user: { id } } });
-    console.log(existComment);
     if (!existComment) {
       throw new HttpException('본인이 작성한 댓글이 아닙니다.', HttpStatus.FORBIDDEN);
     }
