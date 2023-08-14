@@ -803,10 +803,6 @@ const createMembers = document.getElementsByName('createMembers');
 const createBoardBtn = document.getElementById('createBoardBtn');
 
 const statusAndMembers = async () => {
-  // const searchParams = new URL(location.href).searchParams;
-  // const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
-  // const projectId = urlParams.get('projectId');
-
   const api = await fetch(`/projects/${projectId}`);
   const result = await api.json();
 
@@ -823,10 +819,6 @@ const statusAndMembers = async () => {
 };
 
 createBoardBtn.addEventListener('click', async () => {
-  // const searchParams = new URL(location.href).searchParams;
-  // const urlParams = new URL('http://localhost:3000/projects?projectId=18').searchParams;
-  // const projectId = urlParams.get('projectId');
-
   let memberList = [];
   createMembers.forEach((x) => {
     if (x.checked) {

@@ -128,6 +128,8 @@ export class TokenValidMiddleware implements NestMiddleware {
 
 이재혁 :
 
+- 타입을 하나하나 지정해주는게 익숙치 않고, 외부 클래스에서 다른 클래스의 메서드를 쓰기 위해 의존성을 주입해주는 개념이 이해는 되었지만, 실제로 사용하려고 하면 되게 어려웠습니다.
+
 이상훈 :
 
 - 보드(카드) 이동 시 지정해놓은 Sequence 번호가 불규척이지 않게 변경되는 현상이 생김  
