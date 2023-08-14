@@ -70,6 +70,19 @@
 
 박성민 :
 
+- socket으로 room을 만들어서 해당 room에 있는 인원들에게 새로운 메시지가 왔을 때, 해당 room에 있지 않아도 채팅 기록을 갱신시키고 한 번의 알림만을 보내주는 기능을 구현하는 것이 어려웠음
+- room에 있는 유저들에게 메시지를 전송하면 방에 접속한 모든 유저가 전달을 받으면서 룸에 접속한 유저의 인원 수 만큼의 알림이 중복되어 생성 되는 부분을 해결하는 것이 어려웠음
+
+```javascript
+socket.on('newMessage', ({ userId, message, room, date }) => {
+  if (document.getElementById(`${room}-chat-container`)) return;
+
+  const result = updateRoomMessage(room, message, date);
+  if (result === false) return;
+  announceMessage(room, message, userId, date);
+});
+```
+
 인한별 :
 
 - 토큰 방식으로 로그인을 구현하였으며, 보안에 취약한 점이 치명적 단점으로 보여 보안을 어느정도 강화할 수 있는 리프레시토큰을 도입해봤음
